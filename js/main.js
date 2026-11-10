@@ -18,6 +18,7 @@ import { icon } from './icons.js';
 import { FailureSim, STAGES, SEVERITY, DISCLAIMER, HEAT_CSS, diagramSVG } from './failures.js';
 import { Quiz } from './quiz.js';
 import { GUIDE, GUIDE_UI } from './guide.js';
+import { Learn, SAFETY_FOR, safetyTopic, LEARN_UI } from './learn.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -314,6 +315,7 @@ function renderInspector() {
       ${nums ? `<section><h3>${esc(t('insp.nums'))}</h3><dl class="nums">${nums}</dl></section>` : ''}
       ${d.load ? `<section class="loadsec"><h3>${esc(t('insp.load'))}</h3><p>${esc(L(d.load))}</p></section>` : ''}
       ${d.mistake ? `<section class="mistake"><h3>${icon('alert')}<span>${esc(t('insp.mistake'))}</span></h3><p>${esc(L(d.mistake))}</p></section>` : ''}
+      ${safetyHTML(key)}
     </div>`;
 }
 
@@ -329,6 +331,7 @@ $('#inspector').addEventListener('click', (e) => {
   const act = b.dataset.act;
   if (act === 'close') { clearSelection(); renderInspector(); }
   else if (act === 'failclose') closeFailure();
+  else if (act === 'safety') openLearn('safety', b.dataset.topic);
   else if (act === 'failzoom') focusFailure(fsim.active);
   else if (act === 'failreplay') { setFailStage(0); S.fail.playing = !reduceMotion; S.fail.t = 0; renderFailBar(); }
   else if (act === 'focus') focusOn(S.sel.set);
@@ -406,11 +409,12 @@ $('#dock').addEventListener('click', (e) => {
   else if (tool === 'quiz') { quiz.isOpen ? quiz.close() : openQuiz(); }
   else if (tool === 'fail') { S.fail ? stopFail() : startFail(); }
   else if (tool === 'guide') { S.guide ? stopGuide() : startGuide(); }
+  else if (tool === 'safety') { learn.isOpen ? learn.close() : openLearn('safety'); }
   else if (tool === 'reset') { resetView(true); }
 });
 
 function syncDock() {
-  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: quiz.isOpen, fail: !!S.fail, guide: !!S.guide, section: S.section.mode !== 'off', explode: S.explode > 0.01,
+  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: quiz.isOpen, fail: !!S.fail, guide: !!S.guide, safety: learn.isOpen && learn.kind === 'safety', section: S.section.mode !== 'off', explode: S.explode > 0.01,
     layers: LAYERS.some((k) => !S.layers[k]), foundation: false };
   for (const b of $$('#dock [data-tool]')) {
     const k = b.dataset.tool;
@@ -446,7 +450,8 @@ function renderPop() {
   } else if (S.pop === 'foundation') {
     const cur = S.fnd[S.mode];
     h = `<h3>${esc(t('fnd.title'))}</h3><div class="radios">${FOUNDATION_TYPES.map((k) => `
-      <label class="radio"><input type="radio" name="fnd" id="fnd-${k}" value="${k}" ${cur === k ? 'checked' : ''}><span class="dot"></span><span><b>${esc(t('fnd.' + k))}</b><small>${esc(t('fnd.' + k + 'D'))}</small></span></label>`).join('')}</div>`;
+      <label class="radio"><input type="radio" name="fnd" id="fnd-${k}" value="${k}" ${cur === k ? 'checked' : ''}><span class="dot"></span><span><b>${esc(t('fnd.' + k))}</b><small>${esc(t('fnd.' + k + 'D'))}</small></span></label>`).join('')}</div>
+      <button class="btn pop-help" data-learn="choose">${icon('guide')}<span>${esc(t('fnd.help'))}</span></button>`;
   }
   pop.innerHTML = h; pop.hidden = false;
   requestAnimationFrame(placePop);
@@ -462,6 +467,7 @@ $('#pop').addEventListener('input', (e) => {
   }
 });
 $('#pop').addEventListener('click', (e) => {
+  if (e.target.closest('[data-learn]')) { closePop(); openLearn('choose'); return; }
   const b = e.target.closest('[data-sec]'); if (!b) return;
   S.section.mode = b.dataset.sec; applySection(); renderPop(); syncDock();
 });
@@ -470,7 +476,7 @@ document.addEventListener('pointerdown', (e) => {
 });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (quiz.isOpen) return;
+  if (quiz.isOpen || learn.isOpen) return;
   if (S.pop) closePop();
   else if (view === 'detail') closeDetail();
   else if (S.sel) { clearSelection(); renderInspector(); }
@@ -736,6 +742,27 @@ function quizFail(id) {
 }
 $('#quizResume').addEventListener('click', () => openQuiz(true));
 
+// ---------- safety notes and the foundation helper ----------
+const learn = new Learn($('#learn'), {
+  storeys: () => (S.mode === 'house' ? 2 : 4),
+  onApply: (type) => {
+    if (S.mode === 'lab') setMode('building');
+    S.fnd[S.mode] = type; stopFail(); loadModel(true); foundationView();
+    toast(t('toast.fnd', { name: t('fnd.' + type) })); syncDock();
+  },
+  onLab: () => { setMode('lab'); syncDock(); },
+  onClose: () => syncDock(),
+});
+function openLearn(kind, topic) { closePop(); if (quiz.isOpen) quiz.close(); learn.open(kind, topic); syncDock(); }
+// a short safety reminder on each element card, linked to the full notes
+function safetyHTML(key) {
+  const ids = SAFETY_FOR[key]; if (!ids) return '';
+  const items = ids.map(safetyTopic).filter(Boolean);
+  return `<section class="safety"><h3>${icon('helmet')}<span>${esc(t('insp.safety'))}</span></h3>
+    <ul>${items.map((s) => `<li><b>${esc(L(s.title))}.</b> ${esc(L(s.notes[0]))}</li>`).join('')}</ul>
+    <button class="btn small" data-act="safety" data-topic="${items[0].id}">${esc(L(LEARN_UI.more))}</button></section>`;
+}
+
 // ---------- detail studio ----------
 function openDetail(type, title) {
   if (!detail.open(type)) { toast(t('toast.noDetail')); return; }
@@ -914,7 +941,7 @@ function applyLang() {
   for (const el of $$('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
   for (const el of $$('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
   renderInspector(); renderPop(); updateTimeline(); renderSelTag();
-  renderFailBar(); fsim?.refreshLabels(); renderGuideBar(); if (quiz.isOpen) quiz.render();
+  renderFailBar(); fsim?.refreshLabels(); renderGuideBar(); if (quiz.isOpen) quiz.render(); if (learn.isOpen) learn.render();
   detail.refreshLabels(); lab.refreshLabels();
   if (S.mode === 'lab') { renderLab(); renderLabSteps(); }
   updateCanvasLabel(); resize(); invalidate();

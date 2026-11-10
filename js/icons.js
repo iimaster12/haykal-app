@@ -26,6 +26,14 @@ const P = {
   download: '<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>',
   alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4M12 17v.5"/>',
   crack: '<path d="M4 4h16v16H4z" opacity=".45"/><path d="m13 4-2.5 5 3 2.5-3.5 4 1.5 4.5"/><path d="m11.5 15.5-3 1.5"/>',
+  helmet: '<path d="M4 17h16"/><path d="M5 17a7 7 0 0 1 14 0"/><path d="M10 10.5V7.2a2 2 0 0 1 4 0v3.3"/><path d="M3 17h18v2H3z"/>',
+  dig: '<path d="M3 20h18"/><path d="M6 20v-5h12v5" stroke-dasharray="2 2"/><path d="M14 4l4 4-6 6-2-2z"/><path d="M14 4 11 7"/>',
+  steel: '<path d="M6 4v16M12 4v16M18 4v16"/><path d="M4 8h16M4 16h16" opacity=".55"/><circle cx="6" cy="4" r="1.6" fill="currentColor"/>',
+  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  props: '<path d="M3 6h18v3H3z"/><path d="M6 9v11M12 9v11M18 9v11"/><path d="M4 20h4M10 20h4M16 20h4"/>',
+  height: '<path d="M4 20V8h8"/><path d="M12 8V4h8"/><path d="M15 12v8M12 17l3 3 3-3"/>',
+  crane: '<path d="M6 21V4h2v17"/><path d="M4 21h6"/><path d="M8 5h12M8 5l4 4"/><path d="M18 5v6"/><path d="M16 11h4v3h-4z"/>',
+  bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6Z"/>',
   guide: '<path d="M5 4h9a5 5 0 0 1 5 5v11H10a5 5 0 0 1-5-5Z"/><path d="M9 9h6M9 13h4"/>',
 };
 
