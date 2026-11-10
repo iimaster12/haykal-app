@@ -4,7 +4,7 @@ const UI = {
     appName: 'Haykal', appSub: 'Structure Lab', langBtn: 'العربية', langLabel: 'Switch to Arabic', themeLabel: 'Switch light or dark',
     'mode.building': 'Building', 'mode.house': 'House', 'mode.lab': 'Foundation lab',
     'tool.layers': 'Layers', 'tool.xray': 'X-ray', 'tool.section': 'Section', 'tool.explode': 'Explode', 'tool.loads': 'Load path',
-    'tool.build': 'Build it', 'tool.foundation': 'Foundation', 'tool.quiz': 'Quiz', 'tool.reset': 'Reset view',
+    'tool.build': 'Build it', 'tool.foundation': 'Foundation', 'tool.quiz': 'Test', 'tool.guide': 'Guide', 'tool.fail': 'Failures', 'tool.reset': 'Reset view',
     'hint.drag': 'Drag to rotate', 'hint.zoom': 'Pinch or scroll to zoom', 'hint.tap': 'Tap any part to inspect it',
     'zoomx': 'Zoomed in: the concrete fades so you can see the steel',
     'insp.emptyT': 'Tap any part of the model', 'insp.emptyB': 'Columns, beams, footings, bricks, pipes and roof layers all open a card like this one, with what they are made of and how they carry load.',
@@ -18,8 +18,13 @@ const UI = {
     'fnd.title': 'Foundation type', 'fnd.isolated': 'Isolated footings', 'fnd.strip': 'Strip footings', 'fnd.raft': 'Raft', 'fnd.piles': 'Piles and pile caps',
     'fnd.isolatedD': 'One pad per column. Good soil.', 'fnd.stripD': 'A continuous footing under each row.', 'fnd.raftD': 'One slab under the whole building. Weak soil.', 'fnd.pilesD': 'Deep piles down to a strong layer.',
     'build.play': 'Play', 'build.pause': 'Pause', 'build.prev': 'Previous step', 'build.next': 'Next step', 'build.step': 'Step {n} of {total}', 'build.close': 'Exit build mode', 'build.scrub': 'Construction progress',
-    'quiz.find': 'Find the', 'quiz.score': '{s} / {n}', 'quiz.right': 'Correct: {name}.', 'quiz.wrong': 'That part is the {name}. Try again.',
-    'quiz.end': 'You found {s} of {n}.', 'quiz.again': 'Play again', 'quiz.skip': 'Skip', 'quiz.exit': 'Exit quiz',
+    'quiz.resume': 'Back to the test', 'more': 'Details',
+    'fail.title': 'Failure simulation', 'fail.pick': 'Tap a ! marker on the model, or choose a case here.', 'fail.where': 'Where it happens', 'fail.why': 'Why it happens',
+    'fail.effects': 'What it does', 'fail.effEl': 'To the element', 'fail.effBld': 'To the whole building', 'fail.forces': 'Direction of forces', 'fail.note': 'Remember',
+    'fail.replay': 'Replay the steps', 'fail.zoom': 'Zoom to it', 'fail.close': 'Close failure simulation', 'fail.cases': 'Failure cases', 'fail.steps': 'Steps',
+    'fail.legStress': 'Stress, low to high', 'fail.legPot': 'Possible cracks', 'fail.legAct': 'Failure', 'fail.illus': 'Illustration of typical behaviour, not a structural analysis.',
+    'fail.play': 'Play the steps', 'fail.pause': 'Pause', 'fail.none': 'This case does not apply to the chosen foundation type.', 'fail.sev': 'How it fails',
+    'dg.load': 'Load', 'dg.comp': 'Compression', 'dg.ten': 'Tension', 'dg.crack': 'Crack', 'dg.shape': 'Deformed shape (exaggerated)', 'dg.steel': 'Steel bars',
     'detail.back': 'Back to model', 'detail.explode': 'Pull apart', 'detail.hint': 'Drag to rotate. Slide to pull the parts apart.',
     'lvl.0': 'Foundation', 'lvl.1': 'Ground floor', 'lvl.2': 'First floor', 'lvl.3': 'Second floor', 'lvl.4': 'Third floor', 'lvl.5': 'Roof',
     'st.blinding': 'Excavate, compact the soil and pour the blinding', 'st.piles': 'Drill and cast the bored piles', 'st.footings': 'Fix the footing steel and starter bars, then pour',
@@ -47,7 +52,7 @@ const UI = {
     appName: 'هيكل', appSub: 'مختبر المنشآت', langBtn: 'English', langLabel: 'التبديل إلى الإنجليزية', themeLabel: 'التبديل بين الوضع الفاتح والداكن',
     'mode.building': 'المبنى', 'mode.house': 'المنزل', 'mode.lab': 'مختبر الأساسات',
     'tool.layers': 'الطبقات', 'tool.xray': 'شفافية', 'tool.section': 'مقطع', 'tool.explode': 'فصل الطوابق', 'tool.loads': 'مسار الأحمال',
-    'tool.build': 'مراحل البناء', 'tool.foundation': 'الأساسات', 'tool.quiz': 'اختبار', 'tool.reset': 'إعادة العرض',
+    'tool.build': 'مراحل البناء', 'tool.foundation': 'الأساسات', 'tool.quiz': 'اختبار', 'tool.guide': 'الدليل', 'tool.fail': 'الانهيارات', 'tool.reset': 'إعادة العرض',
     'hint.drag': 'اسحب للتدوير', 'hint.zoom': 'باعد إصبعيك أو استخدم عجلة الفأرة للتكبير', 'hint.tap': 'المس أي جزء لمعرفة تفاصيله',
     'zoomx': 'أنت قريب الآن: تتلاشى الخرسانة تدريجيًا لترى حديد التسليح داخلها',
     'insp.emptyT': 'المس أي جزء من النموذج', 'insp.emptyB': 'الأعمدة والجوائز والقواعد والطوب والأنابيب وطبقات السطح، كلها تفتح بطاقة مثل هذه تعرض مكوناتها وطريقة نقلها للأحمال.',
@@ -61,8 +66,13 @@ const UI = {
     'fnd.title': 'نوع الأساسات', 'fnd.isolated': 'قواعد منفصلة', 'fnd.strip': 'قواعد شريطية', 'fnd.raft': 'أساس حصيري', 'fnd.piles': 'خوازيق وأغطيتها',
     'fnd.isolatedD': 'قاعدة لكل عمود. تربة جيدة.', 'fnd.stripD': 'قاعدة مستمرة أسفل كل صف.', 'fnd.raftD': 'بلاطة واحدة أسفل المبنى. تربة ضعيفة.', 'fnd.pilesD': 'خوازيق عميقة حتى طبقة قوية.',
     'build.play': 'تشغيل', 'build.pause': 'إيقاف مؤقت', 'build.prev': 'الخطوة السابقة', 'build.next': 'الخطوة التالية', 'build.step': 'الخطوة {n} من {total}', 'build.close': 'الخروج من مراحل البناء', 'build.scrub': 'تقدم التنفيذ',
-    'quiz.find': 'أين', 'quiz.score': '{s} / {n}', 'quiz.right': 'إجابة صحيحة: {name}.', 'quiz.wrong': 'هذا الجزء هو {name}. حاول مرة أخرى.',
-    'quiz.end': 'وجدت {s} من {n}.', 'quiz.again': 'العب مرة أخرى', 'quiz.skip': 'تخطَّ', 'quiz.exit': 'إنهاء الاختبار',
+    'quiz.resume': 'العودة إلى الاختبار', 'more': 'التفاصيل',
+    'fail.title': 'محاكاة الانهيار', 'fail.pick': 'اضغط على علامة ! في النموذج، أو اختر حالة من هنا.', 'fail.where': 'أين يحدث', 'fail.why': 'لماذا يحدث',
+    'fail.effects': 'ماذا يسبب', 'fail.effEl': 'على العنصر', 'fail.effBld': 'على المبنى كله', 'fail.forces': 'اتجاه القوى', 'fail.note': 'تذكّر',
+    'fail.replay': 'أعد عرض الخطوات', 'fail.zoom': 'قرّب إليه', 'fail.close': 'إغلاق محاكاة الانهيار', 'fail.cases': 'حالات الانهيار', 'fail.steps': 'الخطوات',
+    'fail.legStress': 'الإجهاد، من الأقل إلى الأعلى', 'fail.legPot': 'شقوق محتملة', 'fail.legAct': 'انهيار', 'fail.illus': 'رسم توضيحي للسلوك المعتاد، وليس تحليلًا إنشائيًا.',
+    'fail.play': 'تشغيل الخطوات', 'fail.pause': 'إيقاف مؤقت', 'fail.none': 'هذه الحالة لا تنطبق على نوع الأساس المختار.', 'fail.sev': 'طريقة الانهيار',
+    'dg.load': 'الحمل', 'dg.comp': 'ضغط', 'dg.ten': 'شد', 'dg.crack': 'شق', 'dg.shape': 'الشكل بعد التشوه (مكبّر)', 'dg.steel': 'قضبان الفولاذ',
     'detail.back': 'العودة إلى النموذج', 'detail.explode': 'تفكيك', 'detail.hint': 'اسحب للتدوير، وحرّك المؤشر لتفكيك الأجزاء.',
     'lvl.0': 'الأساسات', 'lvl.1': 'الطابق الأرضي', 'lvl.2': 'الطابق الأول', 'lvl.3': 'الطابق الثاني', 'lvl.4': 'الطابق الثالث', 'lvl.5': 'السطح',
     'st.blinding': 'الحفر ودك التربة وصب خرسانة النظافة', 'st.piles': 'حفر الخوازيق وصبها', 'st.footings': 'تركيب تسليح القواعد وقضبان الانتظار ثم الصب',
@@ -105,7 +115,12 @@ export function t(key, params) {
   if (params) for (const [k, v] of Object.entries(params)) s = s.replaceAll('{' + k + '}', v);
   return s;
 }
+// In Arabic text, runs of numbers, units and Latin names ("900 kN ÷ 150 kN/m²",
+// "ACI 318", "1.5 in (38 mm)") are wrapped in direction isolates so the bidi
+// algorithm keeps them in reading order instead of flipping "900 kN" to "kN 900".
+const LTR_RUN = /\{\w+\}|[0-9A-Za-z][0-9A-Za-z.,/²³°×÷=+()\s-]*[0-9A-Za-z²³°)]|[0-9A-Za-z]/g;
+export const bidi = (s) => (current === 'ar' && typeof s === 'string' ? s.replace(LTR_RUN, (m) => (m[0] === '{' ? m : '\u2066' + m + '\u2069')) : s);
 // pick the right language from a {en, ar} object
-export const L = (o) => (o ? o[current] ?? o.en : '');
+export const L = (o) => (o ? bidi(o[current] ?? o.en) : '');
 // Western digits in both languages, as on engineering drawings
 export const num = (v, d = 2) => Number(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

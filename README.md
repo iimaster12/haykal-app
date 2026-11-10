@@ -66,9 +66,13 @@ Every column, beam, footing, brick wall, pipe and roof layer opens a card: what 
     <td width="50%"><img src="docs/screens/house.jpg" alt="Two-storey house in X-ray showing timber trusses and wiring"><br><b>The house.</b> Timber roof trusses, a cantilever balcony, block walls, plumbing and wiring inside the slab.</td>
     <td width="50%"><img src="docs/screens/arabic.jpg" alt="The app in Arabic with a right-to-left layout"><br><b>Full Arabic.</b> The whole interface mirrors right to left, with standard Arabic engineering terms.</td>
   </tr>
+  <tr>
+    <td width="50%"><img src="docs/screens/failure.jpg" alt="Failure simulation: a footing settles and diagonal cracks run up the walls toward it"><br><b>When things fail.</b> Seven typical failures, from bending and shear cracks to a sinking footing. Each one plays in four steps (loads, stress zone, possible cracks, failure) and opens a card with the cause, the effect on the building and a force diagram. They are teaching illustrations, not a structural analysis.</td>
+    <td width="50%"><img src="docs/screens/test.jpg" alt="Test question with the correct answer and a short explanation"><br><b>Guide and test.</b> A step-by-step guide walks from the soil up to the slab in plain language. The test has beginner and intermediate levels, explains every answer and ends with a score by topic.</td>
+  </tr>
 </table>
 
-Also in the toolbar: section cuts in plan or elevation, floors pulled apart, layer switches (soil, foundation, frame, walls, openings, services, roof), a choice of isolated, strip, raft or pile foundations, and a "find the part" quiz.
+Also in the toolbar: section cuts in plan or elevation, floors pulled apart, layer switches (soil, foundation, frame, walls, openings, services, roof), and a choice of isolated, strip, raft or pile foundations.
 
 ## Install it on any device
 

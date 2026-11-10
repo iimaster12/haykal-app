@@ -60,7 +60,8 @@
   </div>
   <div id="zoomNote" class="zoomnote" role="status"><span data-icon="xray"></span><span data-i18n="zoomx"></span></div>
 
-  <div id="quizBar" class="quizbar" hidden></div>
+  <div id="failBar" class="failbar panel" hidden></div>
+  <div id="guideBar" class="guidebar" hidden></div>
 
   <aside id="inspector" class="panel inspector" aria-live="polite">
     <button id="sheetHandle" class="sheet-handle" aria-label="Expand"><span></span></button>
@@ -86,14 +87,16 @@
   <div id="labSteps" class="labsteps" hidden></div>
 
   <nav id="dock" class="dock" data-i18n-aria="tool.layers">
+    <button data-tool="guide" aria-pressed="false"><span data-icon="guide"></span><span data-i18n="tool.guide">Guide</span></button>
     <button data-tool="layers" aria-pressed="false"><span data-icon="layers"></span><span data-i18n="tool.layers">Layers</span></button>
     <button data-tool="xray" aria-pressed="false"><span data-icon="xray"></span><span data-i18n="tool.xray">X-ray</span></button>
     <button data-tool="section" aria-pressed="false"><span data-icon="section"></span><span data-i18n="tool.section">Section</span></button>
     <button data-tool="explode" aria-pressed="false"><span data-icon="explode"></span><span data-i18n="tool.explode">Explode</span></button>
     <button data-tool="loads" aria-pressed="false"><span data-icon="loads"></span><span data-i18n="tool.loads">Load path</span></button>
+    <button data-tool="fail" aria-pressed="false"><span data-icon="crack"></span><span data-i18n="tool.fail">Failures</span></button>
     <button data-tool="build" aria-pressed="false"><span data-icon="build"></span><span data-i18n="tool.build">Build it</span></button>
     <button data-tool="foundation" aria-pressed="false"><span data-icon="foundation"></span><span data-i18n="tool.foundation">Foundation</span></button>
-    <button data-tool="quiz" aria-pressed="false"><span data-icon="quiz"></span><span data-i18n="tool.quiz">Quiz</span></button>
+    <button data-tool="quiz" aria-pressed="false"><span data-icon="quiz"></span><span data-i18n="tool.quiz">Test</span></button>
     <button data-tool="reset"><span data-icon="reset"></span><span data-i18n="tool.reset">Reset view</span></button>
   </nav>
   <div id="pop" class="pop" hidden></div>
@@ -108,6 +111,8 @@
     <p data-i18n="detail.hint"></p>
   </div>
 
+  <button id="quizResume" class="pill-btn quiz-resume" hidden><span data-icon="quiz"></span><span data-i18n="quiz.resume">Back to the test</span></button>
+  <div id="quiz" class="quiz" hidden></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="loader" class="loader"><div class="ld-bar"></div><span data-i18n="loading">Building the model</span></div>
 </div>

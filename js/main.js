@@ -15,6 +15,9 @@ import { FoundationLab, SOILS } from './lab.js';
 import { DATA, CAT } from './data.js';
 import { t, L, lang, setLang, num } from './i18n.js';
 import { icon } from './icons.js';
+import { FailureSim, STAGES, SEVERITY, DISCLAIMER, HEAT_CSS, diagramSVG } from './failures.js';
+import { Quiz } from './quiz.js';
+import { GUIDE, GUIDE_UI } from './guide.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -91,10 +94,11 @@ const S = {
   mode: 'building', fnd: { building: 'isolated', house: 'isolated' },
   layers: Object.fromEntries(LAYERS.map((k) => [k, true])),
   xray: false, ghost: 0, zoomGhost: 0, section: { mode: 'off', v: 0.55 }, explode: 0, loads: false,
-  build: { on: false, t: 0, playing: false, goal: null }, quiz: null, sel: null, hovered: null,
+  build: { on: false, t: 0, playing: false, goal: null }, fail: null, guide: null, sel: null, hovered: null,
   pop: null, tween: null, detailAnim: null, labType: null, hintGone: false,
 };
 let model = null;
+let fsim = null; // failure simulation for the current model
 
 // ---------- model ----------
 function loadModel(keepCamera = false) {
@@ -107,6 +111,9 @@ function loadModel(keepCamera = false) {
   sun.target.position.copy(model.center);
   sun.position.copy(model.center).add(new THREE.Vector3(-20, 34, 24));
   loadPath.build(model);
+  model.group.updateMatrixWorld(true);
+  if (fsim) { fsim.dispose(); fsim = null; }
+  if (S.fail) { const id = S.fail.id; S.fail.id = null; S.fail.hideAbove = null; S.fail.playing = false; makeSim(); renderFailBar(); if (id) openFailure(id, false); }
   if (S.build.on) S.build.t = Math.min(S.build.t, model.stages.length);
   if (!keepCamera) resetView(false);
   applySection(); applyModel(); renderInspector(); renderPop(); updateTimeline();
@@ -128,6 +135,7 @@ function applyModel() {
   for (const e of model.elements) {
     const ud = e.userData;
     let vis = S.layers[ud.layer] !== false, sy = 1;
+    if (S.fail?.hideAbove != null && ud.floor > S.fail.hideAbove) vis = false;
     if (S.build.on && !ud.static) {
       const p = tb - ud.stage;
       if (p <= 0) vis = false;
@@ -152,7 +160,7 @@ function applyRebar() {
   const tb = S.build.on ? S.build.t : Infinity, g = S.ghost;
   for (const r of model.rebar) {
     const ud = r.userData;
-    let vis = S.layers[ud.layer] !== false;
+    let vis = S.layers[ud.layer] !== false && !(S.fail?.hideAbove != null && ud.floor > S.fail.hideAbove);
     if (vis) { const p = tb - ud.stage; vis = S.build.on ? p > 0 && (g > 0.08 || p < 1) : g > 0.08; }
     r.visible = vis;
   }
@@ -263,6 +271,8 @@ function renderSelTag() {
 const fmtDims = (d) => d ? d.map((v) => num(v, 2)).join(' × ') + ' m' : '';
 function renderInspector() {
   const el = $('#inspBody');
+  app.classList.toggle('has-fail', !S.sel && !!S.fail?.id);
+  if (!S.sel && S.fail?.id) { renderFailCard(el); return; }
   if (!S.sel) {
     el.innerHTML = `<div class="ins-empty"><div class="empty-mark">${icon('focus')}</div><h2>${esc(t('insp.emptyT'))}</h2><p>${esc(t('insp.emptyB'))}</p>
       <ul class="legend">${['column', 'tiebeam', 'footing', 'brickwall', 'waterpipe'].map((k) => `<li><button class="chip" data-find="${k}">${esc(L(DATA[k].name))}</button></li>`).join('')}</ul></div>`;
@@ -312,18 +322,15 @@ $('#inspector').addEventListener('click', (e) => {
   if (!b) return;
   if (b.dataset.find) {
     // pick the matching element nearest the camera, so the zoom lands on one the student can see
-    let best = null, bestD = Infinity; const c = new THREE.Vector3();
-    for (const m of model.elements) {
-      if (m.userData.key !== b.dataset.find || !shown(m)) continue;
-      new THREE.Box3().setFromObject(m).getCenter(c);
-      const d = c.distanceTo(camera.position);
-      if (d < bestD) { bestD = d; best = m; }
-    }
+    const best = findFirst([{ key: b.dataset.find }]);
     if (best) { select(best); focusOn(S.sel.set); }
     return;
   }
   const act = b.dataset.act;
   if (act === 'close') { clearSelection(); renderInspector(); }
+  else if (act === 'failclose') closeFailure();
+  else if (act === 'failzoom') focusFailure(fsim.active);
+  else if (act === 'failreplay') { setFailStage(0); S.fail.playing = !reduceMotion; S.fail.t = 0; renderFailBar(); }
   else if (act === 'focus') focusOn(S.sel.set);
   else if (act === 'inside') openDetail(DATA[S.sel.key].detail, L(DATA[S.sel.key].name));
 });
@@ -368,7 +375,14 @@ canvas.addEventListener('pointerleave', () => setHover(null));
 function onTap(x, y) {
   if (view !== 'main') return;
   const o = pickAt(x, y);
-  if (S.quiz) { quizCheck(o); return; }
+  if (S.fail && fsim) {
+    // a tap on a coloured zone, or on an element that has a failure case, opens that case
+    const hit = ray.intersectObjects(fsim.hits.filter(shown), false)[0];
+    const objHit = o && ray.intersectObject(o, false)[0];
+    if (hit && (!objHit || hit.distance <= objHit.distance + 0.1)) { openFailure(hit.object.userData.failId); return; }
+    const fid = o && fsim.caseFor(o);
+    if (fid && fid !== S.fail.id) { openFailure(fid); return; }
+  }
   select(o);
 }
 
@@ -389,12 +403,14 @@ $('#dock').addEventListener('click', (e) => {
   if (tool === 'xray') { S.xray = !S.xray; syncDock(); }
   else if (tool === 'loads') { S.loads = !S.loads; if (S.loads) { S.explode = 0; if (S.build.on) stopBuild(); } applyModel(); syncDock(); if (S.loads) toast(L({ en: 'Follow the arrows: slab → beam → column → footing → soil', ar: 'تابع الأسهم: البلاطة ← الجائز ← العمود ← القاعدة ← التربة' })); }
   else if (tool === 'build') { S.build.on ? stopBuild() : startBuild(); }
-  else if (tool === 'quiz') { S.quiz ? stopQuiz() : startQuiz(); }
+  else if (tool === 'quiz') { quiz.isOpen ? quiz.close() : openQuiz(); }
+  else if (tool === 'fail') { S.fail ? stopFail() : startFail(); }
+  else if (tool === 'guide') { S.guide ? stopGuide() : startGuide(); }
   else if (tool === 'reset') { resetView(true); }
 });
 
 function syncDock() {
-  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: !!S.quiz, section: S.section.mode !== 'off', explode: S.explode > 0.01,
+  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: quiz.isOpen, fail: !!S.fail, guide: !!S.guide, section: S.section.mode !== 'off', explode: S.explode > 0.01,
     layers: LAYERS.some((k) => !S.layers[k]), foundation: false };
   for (const b of $$('#dock [data-tool]')) {
     const k = b.dataset.tool;
@@ -439,7 +455,7 @@ $('#pop').addEventListener('input', (e) => {
   const el = e.target;
   if (el.dataset.layer) { S.layers[el.dataset.layer] = el.checked; if (S.sel && !shown(S.sel.obj)) { clearSelection(); renderInspector(); } applyModel(); syncDock(); }
   else if (el.id === 'secRange') { S.section.v = +el.value; applySection(); }
-  else if (el.id === 'expRange') { S.explode = +el.value; if (S.explode > 0.01 && S.loads) { S.loads = false; } applyModel(); syncDock(); }
+  else if (el.id === 'expRange') { S.explode = +el.value; if (S.explode > 0.01) { S.loads = false; stopFail(); } applyModel(); syncDock(); }
   else if (el.name === 'fnd') {
     S.fnd[S.mode] = el.value; loadModel(true);
     toast(t('toast.fnd', { name: t('fnd.' + el.value) }));
@@ -454,6 +470,7 @@ document.addEventListener('pointerdown', (e) => {
 });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
+  if (quiz.isOpen) return;
   if (S.pop) closePop();
   else if (view === 'detail') closeDetail();
   else if (S.sel) { clearSelection(); renderInspector(); }
@@ -461,6 +478,7 @@ addEventListener('keydown', (e) => {
 
 // ---------- build sequence ----------
 function startBuild() {
+  stopFail(); stopGuide();
   S.build.on = true; S.build.t = 0; S.build.playing = !reduceMotion; S.build.goal = null; S.build.follow = true;
   hideHint();
   S.loads = false; S.explode = 0; clearSelection(); renderInspector();
@@ -492,47 +510,231 @@ $('#timeline').addEventListener('click', (e) => {
 });
 $('#tlRange').addEventListener('input', (e) => { S.build.t = +e.target.value; S.build.playing = false; applyModel(); updateTimeline(); });
 
-// ---------- quiz ----------
-function startQuiz() {
-  if (S.build.on) stopBuild();
-  clearSelection(); renderInspector();
-  const keys = [...new Set(model.elements.filter((e) => shown(e) && e.userData.key !== 'soil').map((e) => e.userData.key))].filter((k) => DATA[k]);
-  for (let i = keys.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [keys[i], keys[j]] = [keys[j], keys[i]]; }
-  S.quiz = { list: keys.slice(0, 8), i: 0, score: 0, tries: 0, done: false };
-  $('#quizBar').hidden = false; app.classList.add('quiz-on');
-  updateQuizBar(); syncDock();
-}
-function stopQuiz() { S.quiz = null; $('#quizBar').hidden = true; app.classList.remove('quiz-on'); syncDock(); }
-function updateQuizBar() {
-  const q = S.quiz, el = $('#quizBar'); if (!q) return;
-  if (q.done) {
-    el.innerHTML = `<div class="qz-q"><b>${esc(t('quiz.end', { s: q.score, n: q.list.length }))}</b></div>
-      <div class="qz-act"><button class="btn primary" data-q="again">${esc(t('quiz.again'))}</button><button class="btn" data-q="exit">${esc(t('quiz.exit'))}</button></div>`;
-    return;
+// nearest visible element matching the first candidate that exists
+function findFirst(list) {
+  const c = new THREE.Vector3();
+  for (const p of list) {
+    let best = null, bestD = Infinity;
+    for (const m of model.elements) {
+      const u = m.userData;
+      if (u.key !== p.key || (p.code && u.code !== p.code) || (p.floor != null && u.floor !== p.floor) || !shown(m)) continue;
+      new THREE.Box3().setFromObject(m).getCenter(c);
+      const d = c.distanceTo(camera.position);
+      if (d < bestD) { bestD = d; best = m; }
+    }
+    if (best) return best;
   }
-  const name = L(DATA[q.list[q.i]].name);
-  el.innerHTML = `<div class="qz-q"><span>${esc(t('quiz.find'))}</span> <b>${esc(name)}</b>${lang() === 'ar' ? '؟' : '?'}</div>
-    <div class="qz-act"><span class="qz-score" aria-label="score">${esc(t('quiz.score', { s: q.score, n: q.list.length }))}</span>
-    <button class="btn" data-q="skip">${esc(t('quiz.skip'))}</button><button class="icon-btn" data-q="exit" aria-label="${esc(t('quiz.exit'))}">${icon('close')}</button></div>`;
+  return null;
 }
-$('#quizBar').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-q]'); if (!b) return;
-  if (b.dataset.q === 'exit') stopQuiz();
-  else if (b.dataset.q === 'again') startQuiz();
-  else if (b.dataset.q === 'skip') nextQuiz();
+const fmtL = (o, p) => Object.entries(p).reduce((s, [k, v]) => s.replaceAll('{' + k + '}', v), L(o));
+
+// ---------- failure simulation ----------
+function makeSim() {
+  fsim = new FailureSim(scene, model, S.mode, (id) => openFailure(id));
+  fsim.showMarkers(!!S.fail);
+}
+function startFail(id = null) {
+  if (!model) return;
+  if (S.build.on) stopBuild();
+  S.fail = { id: null, stage: 0, playing: false, t: 0, hideAbove: null };
+  if (!fsim) makeSim();
+  fsim.showMarkers(true);
+  app.classList.add('fail-on'); $('#failBar').hidden = false; hideHint();
+  if (id) openFailure(id);
+  else { clearSelection(); renderInspector(); renderFailBar(); }
+  syncDock(); invalidate();
+}
+function stopFail() {
+  if (!S.fail) return;
+  fsim?.clear(); fsim?.showMarkers(false);
+  S.fail = null; $('#failBar').hidden = true; app.classList.remove('fail-on', 'has-fail');
+  applyModel(); renderInspector(); syncDock(); invalidate();
+}
+function openFailure(id, focus = true) {
+  if (!S.fail) { startFail(id); return; }
+  if (!fsim) makeSim();
+  const sc = fsim.build(id);
+  if (!sc) { toast(t('fail.none')); renderFailBar(); return; }
+  clearSelection();
+  S.loads = false; S.explode = 0;
+  if (S.section.mode !== 'off') { S.section.mode = 'off'; applySection(); }
+  S.fail.id = id; S.fail.hideAbove = sc.f.clipAbove ? sc.targets[0].mesh.userData.floor : null;
+  setFailStage(reduceMotion ? 2 : 0); S.fail.playing = !reduceMotion; S.fail.t = 0;
+  applyModel(); renderInspector(); renderFailBar(); syncDock();
+  $('#inspector').classList.remove('expanded');
+  if (focus) focusFailure(sc);
+  invalidate();
+}
+// back to the list of cases, overlays removed
+function closeFailure() {
+  if (!S.fail) return;
+  fsim?.clear(); Object.assign(S.fail, { id: null, playing: false, hideAbove: null });
+  applyModel(); renderInspector(); renderFailBar(); invalidate();
+}
+function setFailStage(n) { S.fail.stage = clamp(n, 0, 3); fsim.setStage(S.fail.stage); invalidate(); }
+function focusFailure(sc) {
+  if (!sc) return;
+  const box = fsim.focusBox(), c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+  const face = sc.targets[0].face;
+  const dir = (face === '+y' ? new THREE.Vector3(0.3, 1, 0.85) : face === '-x' ? new THREE.Vector3(-0.8, 0.36, 0.9) : new THREE.Vector3(-0.32, 0.36, 1)).normalize();
+  // fit the element (plus its load arrows) into the free part of the view: below the
+  // failure bar, beside the side panel on wide screens, above the sheet on phones
+  const H = stageEl.clientHeight || 1, W = (stageEl.clientWidth || 1) - sidePx, cv = covers();
+  const fb = sidePx ? Math.max(0, $('#failBar').getBoundingClientRect().bottom - stageEl.getBoundingClientRect().top) : 0;
+  const tv = Math.tan(THREE.MathUtils.degToRad(camera.userData.fov0 ?? camera.fov) / 2);
+  const hFree = Math.max(160, H - fb - cv.top - cv.bottom - (sidePx ? 90 : 0));
+  const across = face === '-x' ? size.z : face === '+y' ? Math.hypot(size.x, size.z) * 0.8 : size.x;
+  const up = face === '+y' ? Math.max(size.z, 1) * 0.6 : size.y + 1.2;
+  const dist = clamp(Math.max((across * 0.62) / (tv * W / H), (up * 0.62) / (tv * hFree / H)) + Math.min(size.x, size.z) / 2, 3.5, 34);
+  const wpp = (2 * dist * tv) / H;
+  const tgt = c.clone(); tgt.y += (fb - (sidePx ? 90 : 0)) * 0.5 * wpp;
+  tweenTo(views.main, tgt, tgt.clone().addScaledVector(dir, dist));
+}
+function renderFailBar() {
+  const el = $('#failBar'); if (!S.fail || !fsim) return;
+  const fa = document.activeElement;
+  let keep = null;
+  if (el.contains(fa)) keep = fa.dataset.fid ? `[data-fid="${fa.dataset.fid}"]` : fa.dataset.fb ? `[data-fb="${fa.dataset.fb}"]` + (fa.dataset.n ? `[data-n="${fa.dataset.n}"]` : '') : null;
+  const sc = fsim.active, st = S.fail.stage;
+  const cases = fsim.available.map(({ f }) => `<button class="fb-case sev-${f.severity}" role="tab" aria-selected="${S.fail.id === f.id}" data-fid="${f.id}"><i></i><span>${esc(L(f.name))}</span></button>`).join('');
+  const steps = sc ? `<div class="fb-steps"><button class="icon-btn fb-play" data-fb="play" aria-label="${esc(t(S.fail.playing ? 'fail.pause' : 'fail.play'))}">${icon(S.fail.playing ? 'pause' : 'play')}</button>
+      <ol class="fb-stages" aria-label="${esc(t('fail.steps'))}">${STAGES.map((x, i) => `<li><button data-fb="stage" data-n="${i}" aria-current="${i === st ? 'step' : 'false'}" class="${i < st ? 'done' : ''}"><b>${i + 1}</b><span>${esc(L(x))}</span></button></li>`).join('')}</ol></div>
+      <p class="fb-cap" aria-live="polite">${esc(L(sc.f.stages[st]))}</p>`
+    : `<p class="fb-cap muted">${esc(t('fail.pick'))}</p>`;
+  el.innerHTML = `<div class="fb-top"><h2>${icon('crack')}<span>${esc(t('fail.title'))}</span></h2>
+      <button class="icon-btn" data-fb="close" aria-label="${esc(t('fail.close'))}">${icon('close')}</button></div>
+    <div class="fb-cases" role="tablist" aria-label="${esc(t('fail.cases'))}">${cases}</div>${steps}
+    <ul class="fb-legend">
+      <li class="${sc && st >= 1 ? 'on' : ''}"><span class="lg-heat" style="background:${HEAT_CSS}"></span>${esc(t('fail.legStress'))}</li>
+      <li class="${sc && st === 2 ? 'on' : ''}"><span class="lg-pot"></span>${esc(t('fail.legPot'))}</li>
+      <li class="${sc && st === 3 ? 'on' : ''}"><span class="lg-act"></span>${esc(t('fail.legAct'))}</li></ul>
+    <p class="fb-illus">${icon('alert')}<span>${esc(t('fail.illus'))}</span></p>`;
+  if (keep) el.querySelector(keep)?.focus();
+}
+$('#failBar').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b || !S.fail) return;
+  if (b.dataset.fid) { if (b.dataset.fid === S.fail.id) focusFailure(fsim.active); else openFailure(b.dataset.fid); return; }
+  const a = b.dataset.fb;
+  if (a === 'close') stopFail();
+  else if (a === 'stage') { S.fail.playing = false; setFailStage(+b.dataset.n); renderFailBar(); }
+  else if (a === 'play') { if (S.fail.stage >= 3 && !S.fail.playing) setFailStage(0); S.fail.playing = !S.fail.playing; S.fail.t = 0; renderFailBar(); }
 });
-function nextQuiz() {
-  const q = S.quiz; q.i++; q.tries = 0;
-  if (q.i >= q.list.length) q.done = true;
-  updateQuizBar();
+function renderFailCard(el) {
+  const f = fsim.active.f, other = lang() === 'ar' ? 'en' : 'ar';
+  el.innerHTML = `
+    <header class="ins-head">
+      <div class="tagrow"><span class="sev sev-${f.severity}" title="${esc(t('fail.sev'))}">${icon('alert')}<span>${esc(L(SEVERITY[f.severity]))}</span></span><span class="cat">${esc(t('fail.title'))}</span>
+        <button class="icon-btn ins-close" data-act="failclose" aria-label="${esc(t('insp.close'))}">${icon('close')}</button></div>
+      <h2>${esc(L(f.name))}</h2>
+      <p class="altname" lang="${other}" dir="${other === 'ar' ? 'rtl' : 'ltr'}">${esc(f.name[other])}</p>
+      <div class="ins-actions">
+        <button class="btn" data-act="failreplay">${icon('play')}<span>${esc(t('fail.replay'))}</span></button>
+        <button class="btn" data-act="failzoom">${icon('focus')}<span>${esc(t('fail.zoom'))}</span></button>
+      </div>
+    </header>
+    <div class="ins-scroll">
+      <section><h3>${esc(t('fail.where'))}</h3><p class="sum">${esc(L(f.where))}</p></section>
+      <section><h3>${esc(t('fail.why'))}</h3><ol class="why">${f.why.map((w) => `<li>${esc(L(w))}</li>`).join('')}</ol></section>
+      <section><h3>${esc(t('fail.effects'))}</h3><dl class="effects">
+        <div><dt>${esc(t('fail.effEl'))}</dt><dd>${esc(L(f.effEl))}</dd></div>
+        <div><dt>${esc(t('fail.effBld'))}</dt><dd>${esc(L(f.effBld))}</dd></div></dl></section>
+      <section><h3>${esc(t('fail.forces'))}</h3><figure class="dg">${diagramSVG(f.diagram)}
+        <figcaption><ul class="dg-key"><li><i class="k-load"></i>${esc(t('dg.load'))}</li><li><i class="k-comp"></i>${esc(t('dg.comp'))}</li>
+          <li><i class="k-ten"></i>${esc(t('dg.ten'))}</li><li><i class="k-crack"></i>${esc(t('dg.crack'))}</li><li><i class="k-dash"></i>${esc(t('dg.shape'))}</li></ul></figcaption></figure></section>
+      <section class="note"><h3>${icon('guide')}<span>${esc(t('fail.note'))}</span></h3><p>${esc(L(f.note))}</p></section>
+      <p class="disclaimer">${icon('alert')}<span>${esc(L(DISCLAIMER))}</span></p>
+    </div>`;
 }
-function quizCheck(o) {
-  const q = S.quiz; if (!o || q.done) return;
-  const key = o.userData.key, target = q.list[q.i];
-  select(o);
-  if (key === target) { if (q.tries === 0) q.score++; toast(t('quiz.right', { name: L(DATA[key].name) }), 'ok'); setTimeout(() => { clearSelection(); renderInspector(); }, 900); nextQuiz(); }
-  else { q.tries++; toast(t('quiz.wrong', { name: L(DATA[key]?.name) }), 'bad'); }
+
+// ---------- guided tour ----------
+const guideSteps = () => GUIDE.filter((g) => !g.only || g.only === S.mode);
+function startGuide() {
+  if (!model) return;
+  if (S.build.on) stopBuild();
+  if (quiz.isOpen) quiz.close();
+  S.guide = { i: 0, xray: false };
+  if (LAYERS.some((k) => !S.layers[k])) { for (const k of LAYERS) S.layers[k] = true; applyModel(); }
+  $('#guideBar').hidden = false; app.classList.add('guide-on'); hideHint();
+  guideGo(0); syncDock();
 }
+function stopGuide() {
+  if (!S.guide) return;
+  if (S.guide.xray) S.xray = false;
+  S.guide = null; $('#guideBar').hidden = true; app.classList.remove('guide-on', 'guide-more');
+  if (S.loads) { S.loads = false; applyModel(); }
+  syncDock();
+}
+function foundationView() {
+  const b = model.bounds, sph = b.getBoundingSphere(new THREE.Sphere());
+  const tgt = new THREE.Vector3(sph.center.x, b.min.y + 1.2, sph.center.z);
+  const dir = model.view.pos.clone().sub(model.view.target).normalize();
+  tweenTo(views.main, tgt, tgt.clone().addScaledVector(dir, fitDistance(sph.radius, camera) * 0.56));
+}
+function guideGo(i) {
+  const steps = guideSteps(); i = clamp(i, 0, steps.length - 1); S.guide.i = i;
+  const st = steps[i];
+  app.classList.remove('guide-more');
+  if (st.act !== 'loads' && S.loads) { S.loads = false; applyModel(); }
+  if (st.act !== 'xray' && S.guide.xray) { S.xray = false; S.guide.xray = false; }
+  if (st.act !== 'fail') stopFail();
+  if (st.pick) {
+    const el = findFirst(st.pick);
+    if (el) { select(el); if (el.userData.key === 'soil') foundationView(); else focusOn(S.sel.set); }
+  } else { clearSelection(); renderInspector(); }
+  if (st.act === 'reset') resetView(true);
+  else if (st.act === 'loads') { S.loads = true; S.explode = 0; applyModel(); resetView(true); }
+  else if (st.act === 'xray') {
+    if (!S.xray) { S.xray = true; S.guide.xray = true; }
+    const el = findFirst([{ key: 'beam', code: 'B1-3/B-C' }, { key: 'beam', code: 'B1-3/A-B' }, { key: 'beam' }]);
+    if (el) focusOn(new Set([el]));
+  } else if (st.act === 'fail') startFail();
+  renderGuideBar(); syncDock();
+}
+function renderGuideBar() {
+  const el = $('#guideBar'); if (!S.guide) return;
+  const steps = guideSteps(), i = S.guide.i, st = steps[i], last = i === steps.length - 1;
+  const text = S.mode === 'house' && st.house ? st.house : st.text;
+  el.innerHTML = `<div class="gd-top"><span class="gd-step">${esc(fmtL(GUIDE_UI.step, { n: i + 1, total: steps.length }))}</span>
+      <ol class="gd-dots" aria-hidden="true">${steps.map((_, k) => `<li class="${k < i ? 'done' : k === i ? 'cur' : ''}"></li>`).join('')}</ol>
+      <button class="icon-btn" data-gd="close" aria-label="${esc(L(GUIDE_UI.close))}">${icon('close')}</button></div>
+    <h2 class="gd-title">${esc(L(st.title))}</h2><p class="gd-text">${esc(L(text))}</p>
+    <div class="gd-row">
+      <button class="btn gd-more" data-gd="more">${icon('inside')}<span>${esc(t('more'))}</span></button>
+      <span class="gd-sp"></span>
+      <button class="btn" data-gd="prev" ${i === 0 ? 'disabled' : ''}>${icon('prev', 'flip')}<span>${esc(L(GUIDE_UI.prev))}</span></button>
+      ${st.act === 'quiz' ? `<button class="btn primary" data-gd="quiz">${esc(L(GUIDE_UI.startQuiz))}</button>`
+        : `<button class="btn primary" data-gd="${last ? 'close' : 'next'}"><span>${esc(L(last ? GUIDE_UI.done : GUIDE_UI.next))}</span>${last ? '' : icon('next', 'flip')}</button>`}
+    </div>`;
+}
+$('#guideBar').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-gd]'); if (!b || !S.guide) return;
+  const a = b.dataset.gd;
+  if (a === 'close') stopGuide();
+  else if (a === 'next') guideGo(S.guide.i + 1);
+  else if (a === 'prev') guideGo(S.guide.i - 1);
+  else if (a === 'more') app.classList.toggle('guide-more');
+  else if (a === 'quiz') { stopGuide(); openQuiz(); }
+});
+
+// ---------- test yourself ----------
+const quiz = new Quiz($('#quiz'), {
+  onShow: (sh) => quizShow(sh), onFail: (id) => quizFail(id),
+  onClose: () => { $('#quizResume').hidden = true; syncDock(); },
+});
+function openQuiz(resume = false) { stopGuide(); closePop(); $('#quizResume').hidden = true; quiz.open(resume); syncDock(); }
+function toModel(mode) { if (S.mode === 'lab' || (mode && S.mode !== mode)) setMode(mode || 'building'); }
+function quizShow(sh) {
+  toModel(sh.key === 'balcony' ? 'house' : null); stopFail();
+  const el = findFirst([{ key: sh.key }, ...(sh.alt ? [{ key: sh.alt }] : [])]);
+  if (el) { select(el); focusOn(S.sel.set); }
+  $('#quizResume').hidden = false; syncDock();
+}
+function quizFail(id) {
+  toModel(id === 'balcony' ? 'house' : null);
+  openFailure(id);
+  $('#quizResume').hidden = false; syncDock();
+}
+$('#quizResume').addEventListener('click', () => openQuiz(true));
 
 // ---------- detail studio ----------
 function openDetail(type, title) {
@@ -683,7 +885,7 @@ function setMode(mode, push = true) {
   const prev = S.mode; S.mode = mode;
   app.dataset.mode = mode;
   for (const b of $$('.modes [data-mode]')) b.setAttribute('aria-selected', String(b.dataset.mode === mode));
-  closePop(); if (S.quiz) stopQuiz(); if (S.build.on) stopBuild();
+  closePop(); stopFail(); stopGuide(); if (S.build.on) stopBuild();
   if (mode === 'lab') {
     clearSelection();
     $('#labPanel').hidden = false; $('#labSteps').hidden = false;
@@ -711,7 +913,8 @@ function applyLang() {
   for (const el of $$('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   for (const el of $$('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
   for (const el of $$('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
-  renderInspector(); renderPop(); updateTimeline(); updateQuizBar(); renderSelTag();
+  renderInspector(); renderPop(); updateTimeline(); renderSelTag();
+  renderFailBar(); fsim?.refreshLabels(); renderGuideBar(); if (quiz.isOpen) quiz.render();
   detail.refreshLabels(); lab.refreshLabels();
   if (S.mode === 'lab') { renderLab(); renderLabSteps(); }
   updateCanvasLabel(); resize(); invalidate();
@@ -771,10 +974,12 @@ function applyOffsets() {
 function covers() {
   if (sidePx) return { top: 0, bottom: 0 };
   const h = stageEl.clientHeight; let top = h;
-  const els = view === 'lab' ? [$('#labPanel'), $('#labSteps')] : view === 'main' ? [$('#dock'), S.sel ? $('#inspector') : null] : [$('.detailctl')];
+  const els = view === 'lab' ? [$('#labPanel'), $('#labSteps')] : view === 'main' ? [$('#dock'), S.sel || S.fail?.id ? $('#inspector') : null] : [$('.detailctl')];
   for (const el of els) { if (!el || el.hidden) continue; const r = el.getBoundingClientRect(); if (r.height > 0) top = Math.min(top, r.top); }
-  const head = view === 'detail' ? $('.detailbar') : $('.top');
-  const hb = head ? head.getBoundingClientRect().bottom : 0;
+  // the header plus any bar below it (failures, guide, build timeline)
+  const heads = view === 'detail' ? [$('.detailbar')] : view === 'main' ? [$('.top'), $('#failBar'), $('#guideBar'), $('#timeline')] : [$('.top')];
+  let hb = 0;
+  for (const el of heads) { if (!el || el.hidden) continue; const r = el.getBoundingClientRect(); if (r.height > 0) hb = Math.max(hb, r.bottom); }
   return { top: Math.max(0, hb), bottom: Math.max(0, h - top) };
 }
 // signed shift that centres the view between the header and the bottom panels
@@ -808,7 +1013,8 @@ function frame(now) {
   const moving = v.controls.update();
   if (view === 'main' && model) {
     const d = camera.position.distanceTo(controls.target);
-    const zg = clamp((7.5 - d) / (7.5 - 2.8), 0, 1);
+    // while a failure case is open the concrete stays solid, so the coloured zones read clearly
+    const zg = S.fail?.id ? 0 : clamp((7.5 - d) / (7.5 - 2.8), 0, 1);
     S.zoomGhost = zg;
     const target = Math.max(S.xray ? 1 : 0, zg, S.loads ? 0.55 : 0);
     if (Math.abs(target - S.ghost) > 0.002) {
@@ -837,6 +1043,10 @@ function frame(now) {
       if (controls.target.distanceTo(tgt) > 0.01) anim = true;
     }
     if (loadPath.group.visible) { loadPath.update(dt); anim = true; }
+    if (S.fail?.playing) {
+      S.fail.t += dt;
+      if (S.fail.t > 2.8) { S.fail.t = 0; if (S.fail.stage >= 3) S.fail.playing = false; else setFailStage(S.fail.stage + 1); renderFailBar(); }
+    }
     if (hoverReq && !down) { const [x, y] = hoverReq; hoverReq = null; setHover(pickAt(x, y, true)); }
   } else if (view === 'detail') {
     if (S.detailAnim) {
@@ -850,6 +1060,7 @@ function frame(now) {
   }
   if (anim || moving || needs > 0) {
     renderer.render(v.scene, v.camera);
+    if (view === 'main' && S.fail && fsim) fsim.faceMarkers(camera.position);
     labelRenderer.render(v.scene, v.camera);
     needs = Math.max(0, needs - 1);
   }

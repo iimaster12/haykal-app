@@ -25,6 +25,8 @@ const P = {
   check: '<path d="m5 12 4 4 10-10"/>',
   download: '<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>',
   alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4M12 17v.5"/>',
+  crack: '<path d="M4 4h16v16H4z" opacity=".45"/><path d="m13 4-2.5 5 3 2.5-3.5 4 1.5 4.5"/><path d="m11.5 15.5-3 1.5"/>',
+  guide: '<path d="M5 4h9a5 5 0 0 1 5 5v11H10a5 5 0 0 1-5-5Z"/><path d="M9 9h6M9 13h4"/>',
 };
 
 export function icon(name, cls = '') {
