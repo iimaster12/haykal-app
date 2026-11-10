@@ -27,7 +27,6 @@
 <a href="https://iimaster12.github.io/haykal-app/install.html#linux"><img src="https://img.shields.io/badge/Get%20it%20for-Linux%20%26%20ChromeOS-2F383C?style=for-the-badge&labelColor=192023&logo=linux&logoColor=E6EBE9" alt="Install on Linux & ChromeOS"></a>
 <a href="https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal.apk"><img src="https://img.shields.io/badge/Download-Android%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white&labelColor=192023" alt="Download the Android APK"></a>
 
-**[دليل التثبيت المصوّر لكل جهاز](https://iimaster12.github.io/haykal-app/install.html)**
 
 <br>
 
@@ -68,16 +67,16 @@
 
 <div dir="rtl">
 
-افتح **https://iimaster12.github.io/haykal-app/** ثم ثبّت التطبيق:
+| الجهاز | طريقة الحصول عليه |
+|---|---|
+| [**آيفون وآيباد**](https://iimaster12.github.io/haykal-app/install.html#ios) | افتح رابط التطبيق في Safari، ثم زر المشاركة، ثم **إضافة إلى الشاشة الرئيسية** |
+| [**أندرويد**](https://iimaster12.github.io/haykal-app/install.html#android) | افتح الرابط في Chrome واضغط **تثبيت التطبيق**، أو [حمّل ملف APK](https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal.apk) |
+| [**ويندوز**](https://iimaster12.github.io/haykal-app/install.html#windows) | افتح الرابط في Edge أو Chrome واضغط **تثبيت التطبيق** |
+| [**ماك**](https://iimaster12.github.io/haykal-app/install.html#mac) | افتح الرابط في Chrome أو Edge واضغط **تثبيت التطبيق**، أو في Safari اختر ملف ← إضافة إلى Dock |
+| [**لينكس وكروم أو إس**](https://iimaster12.github.io/haykal-app/install.html#linux) | افتح الرابط في Chrome واضغط **تثبيت التطبيق** |
+| [**حاسوب دون إنترنت**](https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal-offline.html) | حمّل `Haykal-offline.html` وافتحه بنقرتين |
 
-| الجهاز | المتصفح | طريقة التثبيت |
-|---|---|---|
-| آيفون وآيباد | Safari | زر المشاركة، ثم **إضافة إلى الشاشة الرئيسية** |
-| أندرويد | Chrome | اضغط **تثبيت التطبيق** أعلى «هيكل» |
-| ويندوز وماك ولينكس وكروم أو إس | Chrome أو Edge | اضغط **تثبيت التطبيق** أعلى «هيكل»، أو أيقونة التثبيت في شريط العنوان |
-| حاسوب دون إنترنت | أي متصفح | حمّل `Haykal-offline.html` من [آخر إصدار](https://github.com/iimaster12/haykal-app/releases/latest) وافتحه بنقرتين |
-
-بعد التثبيت يظهر التطبيق بأيقونته، ويفتح بملء الشاشة، ويعمل دون إنترنت. التفاصيل في [دليل التثبيت](HOW-TO-INSTALL.md).
+اضغط على جهازك لترى خطوات مصوّرة بالتفصيل. بعد التثبيت يظهر «هيكل» بأيقونته، ويفتح بملء الشاشة، ويعمل دون إنترنت.
 
 ## المحتوى
 

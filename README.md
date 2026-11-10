@@ -74,16 +74,16 @@ Also in the toolbar: section cuts in plan or elevation, floors pulled apart, lay
 
 <div align="center"><img src="docs/screens/phones.jpg" width="640" alt="Haykal on two phones, one in English and one in Arabic"></div>
 
-Open **https://iimaster12.github.io/haykal-app/** and install it:
+| Device | How to get it |
+|---|---|
+| [**iPhone & iPad**](https://iimaster12.github.io/haykal-app/install.html#ios) | Open the app link in Safari, tap Share, then **Add to Home Screen** |
+| [**Android**](https://iimaster12.github.io/haykal-app/install.html#android) | Open the link in Chrome and tap **Install app**, or [download the APK](https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal.apk) |
+| [**Windows**](https://iimaster12.github.io/haykal-app/install.html#windows) | Open the link in Edge or Chrome and click **Install app** |
+| [**macOS**](https://iimaster12.github.io/haykal-app/install.html#mac) | Open the link in Chrome or Edge and click **Install app**, or in Safari choose File → Add to Dock |
+| [**Linux & ChromeOS**](https://iimaster12.github.io/haykal-app/install.html#linux) | Open the link in Chrome and click **Install app** |
+| [**Any laptop with no internet**](https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal-offline.html) | Download `Haykal-offline.html` and double-click it |
 
-| Device | Browser | How to install |
-|---|---|---|
-| iPhone, iPad | Safari | Tap Share, then **Add to Home Screen** |
-| Android | Chrome | Tap **Install app** at the top of Haykal |
-| Windows, macOS, Linux, ChromeOS | Chrome or Edge | Click **Install app** at the top of Haykal, or the install icon in the address bar |
-| A laptop with no internet | any | Download `Haykal-offline.html` from the [latest release](https://github.com/iimaster12/haykal-app/releases/latest) and double-click it |
-
-Once installed it has its own icon, opens full screen and keeps working offline. More detail is in the [install guide](HOW-TO-INSTALL.md).
+Tap your device for illustrated, step-by-step instructions. Once installed, Haykal has its own icon, opens full screen and keeps working offline.
 
 ## Content
 
