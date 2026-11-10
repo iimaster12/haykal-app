@@ -865,12 +865,14 @@ const installable = topLevel && /^https?:$/.test(location.protocol) && !standalo
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let installEvt = null;
 if (installable && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => { /* no offline cache */ });
-if (installable && isIOS) $('#installBtn').hidden = false;
-addEventListener('beforeinstallprompt', (e) => { if (!installable) return; e.preventDefault(); installEvt = e; $('#installBtn').hidden = false; });
+// the button shows in every browser: it uses the system prompt when there is
+// one, and otherwise opens the step-by-step guide for this device
+if (installable) $('#installBtn').hidden = false;
+addEventListener('beforeinstallprompt', (e) => { if (!installable) return; e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').hidden = true; toast(t('install.done'), 'ok'); });
 $('#installBtn').addEventListener('click', async () => {
-  if (installEvt) { installEvt.prompt(); try { await installEvt.userChoice; } catch { /* dismissed */ } installEvt = null; $('#installBtn').hidden = !isIOS; }
-  else toast(t('install.ios'));
+  if (installEvt) { installEvt.prompt(); try { await installEvt.userChoice; } catch { /* dismissed */ } installEvt = null; }
+  else location.href = './install.html' + (isIOS ? '#ios' : '');
 });
 
 // ---------- start ----------

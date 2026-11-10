@@ -23,6 +23,14 @@ An interactive 3D guide to how buildings stand up, for civil engineering student
 <a href="https://iimaster12.github.io/haykal-app/"><img src="https://img.shields.io/badge/%E2%96%B6%20Open%20the%20app-iimaster12.github.io%2Fhaykal--app-F2A516?style=for-the-badge&labelColor=F2A516&color=192023" alt="Open the app"></a>
 <a href="https://github.com/iimaster12/haykal-app/releases/latest"><img src="https://img.shields.io/badge/Download-offline%20version-192023?style=for-the-badge" alt="Download the offline version"></a>
 
+<br>
+
+<a href="https://iimaster12.github.io/haykal-app/install.html#ios"><img src="https://img.shields.io/badge/Get%20it%20for-iPhone%20%26%20iPad-2F383C?style=for-the-badge&labelColor=192023&logo=apple&logoColor=E6EBE9" alt="Install on iPhone & iPad"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#android"><img src="https://img.shields.io/badge/Get%20it%20for-Android-2F383C?style=for-the-badge&labelColor=192023&logo=android&logoColor=E6EBE9" alt="Install on Android"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#windows"><img src="https://img.shields.io/badge/Get%20it%20for-Windows-2F383C?style=for-the-badge&labelColor=192023" alt="Install on Windows"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#mac"><img src="https://img.shields.io/badge/Get%20it%20for-macOS-2F383C?style=for-the-badge&labelColor=192023&logo=apple&logoColor=E6EBE9" alt="Install on macOS"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#linux"><img src="https://img.shields.io/badge/Get%20it%20for-Linux%20%26%20ChromeOS-2F383C?style=for-the-badge&labelColor=192023&logo=linux&logoColor=E6EBE9" alt="Install on Linux & ChromeOS"></a>
+
 <br><br>
 
 <a href="https://iimaster12.github.io/haykal-app/"><img src="docs/screens/hero.jpg" width="920" alt="Haykal showing a four-storey concrete building with a selected column and its information card"></a>

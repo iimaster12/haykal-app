@@ -19,6 +19,15 @@
 
 ### [▶ افتح التطبيق](https://iimaster12.github.io/haykal-app/) | [⬇ تحميل النسخة دون إنترنت](https://github.com/iimaster12/haykal-app/releases/latest)
 
+
+<a href="https://iimaster12.github.io/haykal-app/install.html#ios"><img src="https://img.shields.io/badge/Get%20it%20for-iPhone%20%26%20iPad-2F383C?style=for-the-badge&labelColor=192023&logo=apple&logoColor=E6EBE9" alt="Install on iPhone & iPad"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#android"><img src="https://img.shields.io/badge/Get%20it%20for-Android-2F383C?style=for-the-badge&labelColor=192023&logo=android&logoColor=E6EBE9" alt="Install on Android"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#windows"><img src="https://img.shields.io/badge/Get%20it%20for-Windows-2F383C?style=for-the-badge&labelColor=192023" alt="Install on Windows"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#mac"><img src="https://img.shields.io/badge/Get%20it%20for-macOS-2F383C?style=for-the-badge&labelColor=192023&logo=apple&logoColor=E6EBE9" alt="Install on macOS"></a>
+<a href="https://iimaster12.github.io/haykal-app/install.html#linux"><img src="https://img.shields.io/badge/Get%20it%20for-Linux%20%26%20ChromeOS-2F383C?style=for-the-badge&labelColor=192023&logo=linux&logoColor=E6EBE9" alt="Install on Linux & ChromeOS"></a>
+
+**[دليل التثبيت المصوّر لكل جهاز](https://iimaster12.github.io/haykal-app/install.html)**
+
 <br>
 
 <a href="https://iimaster12.github.io/haykal-app/"><img src="docs/screens/arabic.jpg" width="920" alt="تطبيق هيكل باللغة العربية مع بطاقة جائز الربط الأرضي"></a>

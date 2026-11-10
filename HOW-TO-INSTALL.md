@@ -4,6 +4,8 @@ Haykal is a web app you can install. No app store is needed, and once installed 
 
 **App link: https://iimaster12.github.io/haykal-app/**
 
+**Illustrated steps for your device: https://iimaster12.github.io/haykal-app/install.html**
+
 | Device | Browser | How to install |
 |---|---|---|
 | iPhone or iPad | Safari | Open the link, tap Share, then **Add to Home Screen** |
@@ -27,6 +29,8 @@ The same app can be packaged for Google Play and the Microsoft Store with https:
 «هيكل» تطبيق ويب يمكن تثبيته، دون الحاجة إلى متجر تطبيقات، ويعمل دون إنترنت بعد التثبيت.
 
 **رابط التطبيق: https://iimaster12.github.io/haykal-app/**
+
+**خطوات مصوّرة لجهازك: https://iimaster12.github.io/haykal-app/install.html**
 
 | الجهاز | المتصفح | طريقة التثبيت |
 |---|---|---|

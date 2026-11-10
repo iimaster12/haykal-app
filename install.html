@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Get Haykal</title>
+<meta name="description" content="Install Haykal Structure Lab on iPhone, iPad, Android, Windows, Mac or Linux, or download the offline version.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#192023">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Haykal">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* Install guide: one column, device tabs, numbered steps with a picture of
+   exactly what to tap. Same palette as the app; amber marks the tap target. */
+:root {
+  --bg: #eceee9; --surface: #f8f9f6; --surface-2: #e6e9e4; --ink: #192023; --ink-2: #546060; --ink-3: #7a8584;
+  --line: #d2d7d1; --amber: #f2a516; --amber-soft: rgba(242,165,22,.16); --on-amber: #1d1405; --ok: #24744a;
+  --scr: #ffffff; --scr-2: #f0f1ee; --scr-ink: #1b1f21;
+  --font-display: 'Readex Pro', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101416; --surface: #181d20; --surface-2: #222a2e; --ink: #e6ebe9; --ink-2: #9ba7a7; --ink-3: #75817f;
+  --line: #2f383c; --amber: #ffb43d; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
+  --scr: #262d31; --scr-2: #1c2225; --scr-ink: #e6ebe9; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101416; --surface: #181d20; --surface-2: #222a2e; --ink: #e6ebe9; --ink-2: #9ba7a7; --ink-3: #75817f;
+  --line: #2f383c; --amber: #ffb43d; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
+  --scr: #262d31; --scr-2: #1c2225; --scr-ink: #e6ebe9; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font-body); -webkit-font-smoothing: antialiased; }
+[dir="rtl"] body { line-height: 1.75; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 18px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-inline-end: auto; }
+.brand img { width: 40px; height: 40px; border-radius: 10px; }
+.brand b { font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-weight: 500; text-decoration: none; }
+h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 34px 0 8px; text-wrap: balance; }
+.lead { margin: 0 0 22px; color: var(--ink-2); font-size: 17px; max-width: 60ch; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.tab { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 500; }
+.tab svg { width: 20px; height: 20px; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tab .you { font-size: 11.5px; padding: 1px 7px; border-radius: 99px; background: var(--amber); color: var(--on-amber); font-weight: 600; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 6px; }
+.btn { display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-weight: 600; text-decoration: none; font-size: 15.5px; }
+.btn svg { width: 20px; height: 20px; }
+.btn.primary { background: var(--amber); border-color: var(--amber); color: var(--on-amber); }
+.btn:disabled { opacity: .55; cursor: default; }
+.status { font-size: 14px; color: var(--ink-2); margin: 6px 0 0; }
+.status.ok { color: var(--ok); font-weight: 600; }
+.steps { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
+.step { display: grid; grid-template-columns: 1fr 220px; gap: 18px; align-items: center; padding: 16px; border-radius: 14px; background: var(--surface-2); counter-increment: s; }
+.step .txt { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.step .txt::before { content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: var(--surface); font-family: var(--font-display); font-weight: 600; }
+.step b { display: block; font-family: var(--font-display); font-weight: 600; font-size: 17px; line-height: 1.35; }
+.step span { display: block; color: var(--ink-2); font-size: 14.5px; margin-top: 2px; }
+.step svg.pic { width: 100%; height: auto; display: block; }
+.note { margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: var(--amber-soft); font-size: 14.5px; }
+.more { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+.more .card h2 { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin: 0 0 6px; }
+.more .card p { margin: 0 0 14px; color: var(--ink-2); font-size: 14.5px; }
+.foot { margin-top: 26px; font-size: 13px; color: var(--ink-3); }
+/* screen mockups */
+.pic .frame { fill: var(--scr); stroke: var(--line); stroke-width: 2; }
+.pic .bar { fill: var(--scr-2); }
+.pic .ink { fill: var(--scr-ink); }
+.pic .ln { stroke: var(--scr-ink); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.pic .dim { fill: var(--ink-3); opacity: .35; }
+.pic .hit { fill: none; stroke: var(--amber); stroke-width: 3.5; }
+.pic .hitfill { fill: var(--amber); }
+.pic text { font-family: var(--font-body); fill: var(--scr-ink); } /* sizes come from each drawing */
+.pic .on { fill: var(--on-amber); font-weight: 600; }
+@media (max-width: 640px) {
+  .step { grid-template-columns: 1fr; }
+  .step svg.pic { max-width: 260px; justify-self: center; }
+  .more { grid-template-columns: 1fr; }
+  .tab { padding: 0 12px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt=""><b data-t="brand">Haykal</b></a>
+    <button class="pill" id="lang" type="button"></button>
+  </header>
+  <main>
+    <h1 id="title"></h1>
+    <p class="lead" id="lead"></p>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <section class="card" id="panel" role="tabpanel">
+      <div class="cta" id="cta"></div>
+      <p class="status" id="status" role="status"></p>
+      <ol class="steps" id="steps"></ol>
+      <div class="note" id="note" hidden></div>
+    </section>
+    <div class="more">
+      <section class="card"><h2 id="offT"></h2><p id="offB"></p>
+        <a class="btn" id="offBtn" href="https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal-offline.html"></a></section>
+      <section class="card"><h2 id="storeT"></h2><p id="storeB"></p>
+        <a class="btn" href="./index.html" id="openBtn"></a></section>
+    </div>
+    <p class="foot" id="foot"></p>
+  </main>
+</div>
+<script type="module" src="js/install.js"></script>
+</body>
+</html>
