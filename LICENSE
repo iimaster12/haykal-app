@@ -1,0 +1,19 @@
+Copyright (c) 2026 iimaster12. All rights reserved.
+
+Haykal Structure Lab, including its source code, 3D models, written content,
+translations, icons and screenshots, is proprietary.
+
+No permission is granted to copy, modify, publish, distribute, sublicense,
+sell, or create derivative works from this software or any part of it without
+prior written permission from the copyright holder. Using the published app
+to learn or teach is allowed; reusing its code or content is not.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. The design
+checks in the app are simplified for teaching and must not be used to design
+real structures.
+
+Third-party components keep their own licenses:
+
+  vendor/three/   three.js r160, MIT License, see vendor/three/LICENSE
+  fonts/          IBM Plex Sans Arabic and Readex Pro, SIL Open Font License 1.1,
+                  see fonts/OFL-IBMPlexSansArabic.txt and fonts/OFL-ReadexPro.txt

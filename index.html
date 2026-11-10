@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haykal Structure Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Interactive 3D guide to structural elements for civil engineering students, in English and Arabic.">
+<!-- Everything loads from this folder, so the app works with no internet. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#192023">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Haykal">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.min.js",
+  "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="app" class="app" data-mode="building">
+  <div id="stage" class="stage">
+    <canvas id="gl" role="img" aria-label="3D model"></canvas>
+    <div id="labels" class="labels"></div>
+  </div>
+
+  <header class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="16" y="4" width="8" height="20" rx="1" class="m-col"/>
+        <rect x="6" y="24" width="28" height="8" rx="1" class="m-ftg"/>
+        <path d="M20 7v13" class="m-arrow"/><path d="m16.5 16.5 3.5 4 3.5-4" class="m-arrow"/>
+        <path d="M3 36h34" class="m-soil"/>
+      </svg>
+      <div class="brand-txt"><strong data-i18n="appName">Haykal</strong><span data-i18n="appSub">Structure Lab</span></div>
+    </div>
+    <nav class="modes" role="tablist" aria-label="Models">
+      <button role="tab" class="mode" data-mode="building" aria-selected="true"><span data-icon="building"></span><span data-i18n="mode.building">Building</span></button>
+      <button role="tab" class="mode" data-mode="house" aria-selected="false"><span data-icon="house"></span><span data-i18n="mode.house">House</span></button>
+      <button role="tab" class="mode" data-mode="lab" aria-selected="false"><span data-icon="lab"></span><span data-i18n="mode.lab">Foundation lab</span></button>
+    </nav>
+    <div class="top-actions">
+      <button id="installBtn" class="pill-btn install" hidden><span data-icon="download"></span><span data-i18n="install">Install app</span></button>
+      <button id="langBtn" class="pill-btn" data-i18n-aria="langLabel"><span data-icon="globe"></span><span data-i18n="langBtn">العربية</span></button>
+      <button id="themeBtn" class="icon-btn" data-i18n-aria="themeLabel"><span data-icon="theme"></span></button>
+    </div>
+  </header>
+
+  <div id="hint" class="hint" aria-hidden="true">
+    <span><i data-icon="reset"></i><b data-i18n="hint.drag">Drag to rotate</b></span>
+    <span><i data-icon="focus"></i><b data-i18n="hint.zoom">Pinch or scroll to zoom</b></span>
+    <span><i data-icon="inside"></i><b data-i18n="hint.tap">Tap any part to inspect it</b></span>
+  </div>
+  <div id="zoomNote" class="zoomnote" role="status"><span data-icon="xray"></span><span data-i18n="zoomx"></span></div>
+
+  <div id="quizBar" class="quizbar" hidden></div>
+
+  <aside id="inspector" class="panel inspector" aria-live="polite">
+    <button id="sheetHandle" class="sheet-handle" aria-label="Expand"><span></span></button>
+    <div id="inspBody" class="ins-body"></div>
+  </aside>
+
+  <aside id="labPanel" class="panel labpanel" hidden></aside>
+
+  <div id="timeline" class="timeline" hidden>
+    <div class="tl-top">
+      <span id="tlStep" class="tl-step"></span>
+      <button id="tlClose" class="icon-btn" data-i18n-aria="build.close"><span data-icon="close"></span></button>
+    </div>
+    <p id="tlCap" class="tl-cap"></p>
+    <div class="tl-row">
+      <button id="tlPrev" class="icon-btn" data-i18n-aria="build.prev"><span data-icon="prev" class="flip"></span></button>
+      <button id="tlPlay" class="icon-btn play" data-i18n-aria="build.play"></button>
+      <button id="tlNext" class="icon-btn" data-i18n-aria="build.next"><span data-icon="next" class="flip"></span></button>
+      <input id="tlRange" class="scrub" type="range" min="0" max="10" step="0.01" value="0" data-i18n-aria="build.scrub">
+    </div>
+  </div>
+
+  <div id="labSteps" class="labsteps" hidden></div>
+
+  <nav id="dock" class="dock" data-i18n-aria="tool.layers">
+    <button data-tool="layers" aria-pressed="false"><span data-icon="layers"></span><span data-i18n="tool.layers">Layers</span></button>
+    <button data-tool="xray" aria-pressed="false"><span data-icon="xray"></span><span data-i18n="tool.xray">X-ray</span></button>
+    <button data-tool="section" aria-pressed="false"><span data-icon="section"></span><span data-i18n="tool.section">Section</span></button>
+    <button data-tool="explode" aria-pressed="false"><span data-icon="explode"></span><span data-i18n="tool.explode">Explode</span></button>
+    <button data-tool="loads" aria-pressed="false"><span data-icon="loads"></span><span data-i18n="tool.loads">Load path</span></button>
+    <button data-tool="build" aria-pressed="false"><span data-icon="build"></span><span data-i18n="tool.build">Build it</span></button>
+    <button data-tool="foundation" aria-pressed="false"><span data-icon="foundation"></span><span data-i18n="tool.foundation">Foundation</span></button>
+    <button data-tool="quiz" aria-pressed="false"><span data-icon="quiz"></span><span data-i18n="tool.quiz">Quiz</span></button>
+    <button data-tool="reset"><span data-icon="reset"></span><span data-i18n="tool.reset">Reset view</span></button>
+  </nav>
+  <div id="pop" class="pop" hidden></div>
+
+  <div class="detailbar">
+    <button id="detailBack" class="pill-btn"><span data-icon="back" class="flip"></span><span data-i18n="detail.back">Back to model</span></button>
+    <h2 id="detailTitle" class="detail-title"></h2>
+  </div>
+  <div class="detailctl">
+    <label for="explodeRange" data-i18n="detail.explode">Pull apart</label>
+    <input id="explodeRange" type="range" min="0" max="1" step="0.01" value="0">
+    <p data-i18n="detail.hint"></p>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="loader" class="loader"><div class="ld-bar"></div><span data-i18n="loading">Building the model</span></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
