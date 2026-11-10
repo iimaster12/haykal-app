@@ -21,7 +21,7 @@ An interactive 3D guide to how buildings stand up, for civil engineering student
 <br>
 
 <a href="https://iimaster12.github.io/haykal-app/"><img src="https://img.shields.io/badge/%E2%96%B6%20Open%20the%20app-iimaster12.github.io%2Fhaykal--app-F2A516?style=for-the-badge&labelColor=F2A516&color=192023" alt="Open the app"></a>
-<a href="https://github.com/iimaster12/haykal-app/releases/latest"><img src="https://img.shields.io/badge/%E2%AC%87%20Download-offline%20version-192023?style=for-the-badge" alt="Download the offline version"></a>
+<a href="https://github.com/iimaster12/haykal-app/releases/latest"><img src="https://img.shields.io/badge/Download-offline%20version-192023?style=for-the-badge" alt="Download the offline version"></a>
 
 <br><br>
 
