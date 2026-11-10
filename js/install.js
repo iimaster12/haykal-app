@@ -16,6 +16,8 @@ const T = {
     offBtn: 'Download offline version (1.6 MB)',
     storeT: 'App stores', storeB: 'Haykal does not need a store. The same app can be packaged for Google Play or the Microsoft Store with PWABuilder. The Apple App Store needs a Mac and a paid Apple Developer account.',
     open: 'Open Haykal in the browser', foot: '© 2026 iimaster12. All rights reserved.',
+    apk: 'Download the Android app (APK)',
+    apkNote: 'Prefer an APK file? Download it and open it from your notifications or Files. If Android asks, allow your browser to install unknown apps (Settings → Apps → Special access → Install unknown apps), then tap Install. The APK needs no internet at all, not even on first launch.',
     tabs: { ios: 'iPhone & iPad', android: 'Android', windows: 'Windows', mac: 'Mac', linux: 'Linux & ChromeOS' },
     ui: { share: 'Share', addHome: 'Add to Home Screen', copyL: 'Copy', bookmark: 'Add Bookmark', cancel: 'Cancel', add: 'Add',
       newTab: 'New tab', installApp: 'Install app', installQ: 'Install app?', installBtn: 'Install', file: 'File', newWin: 'New Window', addDock: 'Add to Dock…' },
@@ -64,6 +66,8 @@ const T = {
     offBtn: 'تحميل النسخة دون إنترنت (1.6 ميغابايت)',
     storeT: 'متاجر التطبيقات', storeB: 'لا يحتاج «هيكل» إلى متجر. يمكن تجهيز التطبيق نفسه لمتجر Google Play أو متجر Microsoft عبر PWABuilder. أما متجر Apple فيحتاج إلى جهاز ماك وحساب مطوّر مدفوع.',
     open: 'افتح «هيكل» في المتصفح', foot: '© 2026 iimaster12. جميع الحقوق محفوظة.',
+    apk: 'تحميل تطبيق أندرويد APK',
+    apkNote: 'تفضّل ملف APK؟ حمّله ثم افتحه من الإشعارات أو تطبيق الملفات. إذا طلب أندرويد ذلك، اسمح لمتصفحك بتثبيت التطبيقات غير المعروفة (الإعدادات ← التطبيقات ← وصول خاص ← تثبيت التطبيقات غير المعروفة)، ثم اضغط «تثبيت». لا يحتاج ملف APK إلى الإنترنت إطلاقًا، حتى عند أول تشغيل.',
     tabs: { ios: 'آيفون وآيباد', android: 'أندرويد', windows: 'ويندوز', mac: 'ماك', linux: 'لينكس وكروم أو إس' },
     ui: { share: 'مشاركة', addHome: 'إضافة إلى الشاشة الرئيسية', copyL: 'نسخ', bookmark: 'إضافة علامة', cancel: 'إلغاء', add: 'إضافة',
       newTab: 'علامة تبويب جديدة', installApp: 'تثبيت التطبيق', installQ: 'تثبيت التطبيق؟', installBtn: 'تثبيت', file: 'ملف', newWin: 'نافذة جديدة', addDock: 'إضافة إلى Dock…' },
@@ -198,7 +202,9 @@ function render() {
     cta = `<button class="btn primary" id="installBtn" type="button" ${can ? '' : 'disabled'}>${DL}${esc(t.install)}</button>`;
     status = can ? '' : t.noPrompt;
   }
+  if (device === 'android') cta += `<a class="btn" href="https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal.apk">${DL}${esc(t.apk)}</a>`;
   $('#cta').innerHTML = cta + `<a class="btn" href="./index.html">${OPEN}${esc(t.open)}</a>`;
+  const note = $('#note'); note.hidden = device !== 'android'; note.textContent = device === 'android' ? t.apkNote : '';
   const st = $('#status'); st.textContent = status; st.className = 'status' + (ok ? ' ok' : '');
   $('#steps').innerHTML = t.steps[device].map(([b, s, pic]) => `<li class="step"><div class="txt"><div><b>${esc(b)}</b><span>${esc(s)}</span></div></div>${PICS[pic](t.ui)}</li>`).join('');
   $('#offT').textContent = t.offT; $('#offB').textContent = t.offB; $('#offBtn').innerHTML = DL + esc(t.offBtn);

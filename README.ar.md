@@ -25,6 +25,7 @@
 <a href="https://iimaster12.github.io/haykal-app/install.html#windows"><img src="https://img.shields.io/badge/Get%20it%20for-Windows-2F383C?style=for-the-badge&labelColor=192023" alt="Install on Windows"></a>
 <a href="https://iimaster12.github.io/haykal-app/install.html#mac"><img src="https://img.shields.io/badge/Get%20it%20for-macOS-2F383C?style=for-the-badge&labelColor=192023&logo=apple&logoColor=E6EBE9" alt="Install on macOS"></a>
 <a href="https://iimaster12.github.io/haykal-app/install.html#linux"><img src="https://img.shields.io/badge/Get%20it%20for-Linux%20%26%20ChromeOS-2F383C?style=for-the-badge&labelColor=192023&logo=linux&logoColor=E6EBE9" alt="Install on Linux & ChromeOS"></a>
+<a href="https://github.com/iimaster12/haykal-app/releases/latest/download/Haykal.apk"><img src="https://img.shields.io/badge/Download-Android%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white&labelColor=192023" alt="Download the Android APK"></a>
 
 **[دليل التثبيت المصوّر لكل جهاز](https://iimaster12.github.io/haykal-app/install.html)**
 

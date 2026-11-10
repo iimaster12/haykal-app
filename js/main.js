@@ -861,7 +861,8 @@ function frame(now) {
 // page (an iframe) and in the double-click file there is nothing to install.
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const topLevel = (() => { try { return window.top === window.self; } catch { return false; } })();
-const installable = topLevel && /^https?:$/.test(location.protocol) && !standalone;
+const inAndroidApp = /HaykalApp\//.test(navigator.userAgent); // the APK already holds every file
+const installable = topLevel && /^https?:$/.test(location.protocol) && !standalone && !inAndroidApp;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let installEvt = null;
 if (installable && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => { /* no offline cache */ });
