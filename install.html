@@ -17,7 +17,7 @@
    exactly what to tap. Same palette as the app; amber marks the tap target. */
 :root {
   --bg: #eceee9; --surface: #f8f9f6; --surface-2: #e6e9e4; --ink: #192023; --ink-2: #546060; --ink-3: #7a8584;
-  --line: #d2d7d1; --amber: #f2a516; --amber-soft: rgba(242,165,22,.16); --on-amber: #1d1405; --ok: #24744a;
+  --line: #d2d7d1; --amber: #f2a516; --amber-ink: #8a5300; --amber-soft: rgba(242,165,22,.16); --on-amber: #1d1405; --ok: #24744a;
   --scr: #ffffff; --scr-2: #f0f1ee; --scr-ink: #1b1f21;
   --font-display: 'Readex Pro', 'IBM Plex Sans Arabic', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -25,11 +25,11 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #101416; --surface: #181d20; --surface-2: #222a2e; --ink: #e6ebe9; --ink-2: #9ba7a7; --ink-3: #75817f;
-  --line: #2f383c; --amber: #ffb43d; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
+  --line: #2f383c; --amber: #ffb43d; --amber-ink: #ffc870; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
   --scr: #262d31; --scr-2: #1c2225; --scr-ink: #e6ebe9; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #101416; --surface: #181d20; --surface-2: #222a2e; --ink: #e6ebe9; --ink-2: #9ba7a7; --ink-3: #75817f;
-  --line: #2f383c; --amber: #ffb43d; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
+  --line: #2f383c; --amber: #ffb43d; --amber-ink: #ffc870; --amber-soft: rgba(255,180,61,.15); --ok: #62cc8f;
   --scr: #262d31; --scr-2: #1c2225; --scr-ink: #e6ebe9; color-scheme: dark; }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font-body); -webkit-font-smoothing: antialiased; }
@@ -42,7 +42,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .top { display: flex; align-items: center; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-inline-end: auto; }
 .brand img { width: 40px; height: 40px; border-radius: 10px; }
+.brand-txt { display: flex; flex-direction: column; line-height: 1.2; }
 .brand b { font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+.brand small { font-size: 12px; font-weight: 500; color: var(--amber-ink); white-space: nowrap; }
 .pill { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-weight: 500; text-decoration: none; }
 h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 34px 0 8px; text-wrap: balance; }
 .lead { margin: 0 0 22px; color: var(--ink-2); font-size: 17px; max-width: 60ch; }
@@ -92,7 +94,7 @@ h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt=""><b data-t="brand">Haykal</b></a>
+    <a class="brand" href="./index.html"><img src="icons/icon-192.png" alt=""><span class="brand-txt"><b data-t="brand">Haykal</b><small data-t="by">By Team Hewar</small></span></a>
     <button class="pill" id="lang" type="button"></button>
   </header>
   <main>

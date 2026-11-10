@@ -5,11 +5,12 @@
 # هيكل
 
 **مختبر المنشآت** | Haykal Structure Lab<br>
-دليل تفاعلي ثلاثي الأبعاد يشرح كيف تقف المباني، لطلاب الهندسة المدنية
+دليل تفاعلي ثلاثي الأبعاد يشرح كيف تقف المباني، لطلاب الهندسة المدنية<br>
+بواسطة **فريق حوار**
 
 [English](README.md) | [العربية](README.ar.md)
 
-<img src="https://img.shields.io/badge/version-1.0.0-F2A516?style=for-the-badge&labelColor=192023" alt="الإصدار 1.0.0">
+<img src="https://img.shields.io/badge/version-1.1.1-F2A516?style=for-the-badge&labelColor=192023" alt="الإصدار 1.1.1">
 <img src="https://img.shields.io/badge/three.js-r160-E6EBE9?style=for-the-badge&logo=threedotjs&logoColor=E6EBE9&labelColor=192023" alt="three.js r160">
 <img src="https://img.shields.io/badge/languages-English%20%7C%20Arabic-62CC8F?style=for-the-badge&labelColor=192023" alt="العربية والإنجليزية">
 <img src="https://img.shields.io/badge/works-offline-6FA8D6?style=for-the-badge&labelColor=192023" alt="يعمل دون إنترنت">

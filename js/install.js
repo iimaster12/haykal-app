@@ -6,7 +6,7 @@ const APP_URL = new URL('./', location.href).href;
 
 const T = {
   en: {
-    brand: 'Haykal', lang: 'العربية', title: 'Get Haykal on your device',
+    brand: 'Haykal', by: 'By Team Hewar', lang: 'العربية', title: 'Get Haykal on your device',
     lead: 'Haykal installs straight from your browser. No app store, about 3 MB, and it keeps working offline once installed. Pick your device to see the steps.',
     you: 'Your device', install: 'Install Haykal', installed: 'Haykal is installed on this device. Open it from your home screen or apps.',
     copy: 'Copy the app link', copied: 'Link copied. Open Safari and paste it in the address bar.',
@@ -56,7 +56,7 @@ const T = {
     },
   },
   ar: {
-    brand: 'هيكل', lang: 'English', title: 'ثبّت «هيكل» على جهازك',
+    brand: 'هيكل', by: 'بواسطة فريق حوار', lang: 'English', title: 'ثبّت «هيكل» على جهازك',
     lead: 'يُثبَّت «هيكل» مباشرة من المتصفح، دون متجر تطبيقات، بحجم 3 ميغابايت تقريبًا، ويعمل دون إنترنت بعد التثبيت. اختر جهازك لترى الخطوات.',
     you: 'جهازك', install: 'ثبّت «هيكل»', installed: '«هيكل» مثبّت على هذا الجهاز. افتحه من الشاشة الرئيسية أو قائمة التطبيقات.',
     copy: 'انسخ رابط التطبيق', copied: 'تم نسخ الرابط. افتح Safari والصقه في شريط العنوان.',
@@ -188,6 +188,7 @@ function render() {
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.title = lang === 'ar' ? 'ثبّت هيكل' : 'Get Haykal';
   $('[data-t="brand"]').textContent = t.brand;
+  $('[data-t="by"]').textContent = t.by;
   $('#lang').textContent = t.lang;
   $('#title').textContent = t.title; $('#lead').textContent = t.lead;
   $('#tabs').innerHTML = Object.keys(t.tabs).map((k) => `<button class="tab" role="tab" id="tab-${k}" aria-selected="${k === device}" data-k="${k}">${TAB_ICONS[k]}${esc(t.tabs[k])}${k === detected ? `<span class="you">${esc(t.you)}</span>` : ''}</button>`).join('');
