@@ -1,7 +1,7 @@
 // Interface text in English and standard Arabic. Element content lives in data.js.
 const UI = {
   en: {
-    appName: 'Haykal', appSub: 'Structure Lab', langBtn: 'العربية', langLabel: 'Switch to Arabic', themeLabel: 'Switch light or dark',
+    appName: 'Haykal', appSub: 'Structure Lab', appBy: 'By Team Hewar', langBtn: 'العربية', langLabel: 'Switch to Arabic', themeLabel: 'Switch light or dark',
     'mode.building': 'Building', 'mode.house': 'House', 'mode.lab': 'Foundation lab',
     'tool.layers': 'Layers', 'tool.xray': 'X-ray', 'tool.section': 'Section', 'tool.explode': 'Explode', 'tool.loads': 'Load path',
     'tool.build': 'Build it', 'tool.foundation': 'Foundation', 'tool.quiz': 'Test', 'tool.guide': 'Guide', 'tool.fail': 'Failures', 'tool.reset': 'Reset view',
@@ -49,7 +49,7 @@ const UI = {
     'install': 'Install app', 'install.ios': 'On iPhone or iPad: tap Share, then Add to Home Screen.', 'install.done': 'Installed. Open Haykal from your home screen or apps list.', 'loading': 'Building the model', 'skip': 'Skip to the 3D model',
   },
   ar: {
-    appName: 'هيكل', appSub: 'مختبر المنشآت', langBtn: 'English', langLabel: 'التبديل إلى الإنجليزية', themeLabel: 'التبديل بين الوضع الفاتح والداكن',
+    appName: 'هيكل', appSub: 'مختبر المنشآت', appBy: 'بواسطة فريق حوار', langBtn: 'English', langLabel: 'التبديل إلى الإنجليزية', themeLabel: 'التبديل بين الوضع الفاتح والداكن',
     'mode.building': 'المبنى', 'mode.house': 'المنزل', 'mode.lab': 'مختبر الأساسات',
     'tool.layers': 'الطبقات', 'tool.xray': 'شفافية', 'tool.section': 'مقطع', 'tool.explode': 'فصل الطوابق', 'tool.loads': 'مسار الأحمال',
     'tool.build': 'مراحل البناء', 'tool.foundation': 'الأساسات', 'tool.quiz': 'اختبار', 'tool.guide': 'الدليل', 'tool.fail': 'الانهيارات', 'tool.reset': 'إعادة العرض',
