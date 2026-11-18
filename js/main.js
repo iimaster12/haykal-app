@@ -19,6 +19,7 @@ import { FailureSim, STAGES, SEVERITY, DISCLAIMER, HEAT_CSS, diagramSVG } from '
 import { Quiz } from './quiz.js';
 import { GUIDE, GUIDE_UI } from './guide.js';
 import { Learn, SAFETY_FOR, safetyTopic, LEARN_UI } from './learn.js';
+import { Roofs } from './roofs.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -410,11 +411,12 @@ $('#dock').addEventListener('click', (e) => {
   else if (tool === 'fail') { S.fail ? stopFail() : startFail(); }
   else if (tool === 'guide') { S.guide ? stopGuide() : startGuide(); }
   else if (tool === 'safety') { learn.isOpen ? learn.close() : openLearn('safety'); }
+  else if (tool === 'roofs') { roofPanel.isOpen ? roofPanel.close() : openRoofs(); }
   else if (tool === 'reset') { resetView(true); }
 });
 
 function syncDock() {
-  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: quiz.isOpen, fail: !!S.fail, guide: !!S.guide, safety: learn.isOpen && learn.kind === 'safety', section: S.section.mode !== 'off', explode: S.explode > 0.01,
+  const on = { xray: S.xray, loads: S.loads, build: S.build.on, quiz: quiz.isOpen, fail: !!S.fail, guide: !!S.guide, safety: learn.isOpen && learn.kind === 'safety', roofs: roofPanel.isOpen, section: S.section.mode !== 'off', explode: S.explode > 0.01,
     layers: LAYERS.some((k) => !S.layers[k]), foundation: false };
   for (const b of $$('#dock [data-tool]')) {
     const k = b.dataset.tool;
@@ -476,7 +478,7 @@ document.addEventListener('pointerdown', (e) => {
 });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (quiz.isOpen || learn.isOpen) return;
+  if (quiz.isOpen || learn.isOpen || roofPanel.isOpen) return;
   if (S.pop) closePop();
   else if (view === 'detail') closeDetail();
   else if (S.sel) { clearSelection(); renderInspector(); }
@@ -727,7 +729,7 @@ const quiz = new Quiz($('#quiz'), {
   onShow: (sh) => quizShow(sh), onFail: (id) => quizFail(id),
   onClose: () => { $('#quizResume').hidden = true; syncDock(); },
 });
-function openQuiz(resume = false) { stopGuide(); closePop(); $('#quizResume').hidden = true; quiz.open(resume); syncDock(); }
+function openQuiz(resume = false) { stopGuide(); closePop(); if (roofPanel.isOpen) roofPanel.close(); $('#quizResume').hidden = true; quiz.open(resume); syncDock(); }
 function toModel(mode) { if (S.mode === 'lab' || (mode && S.mode !== mode)) setMode(mode || 'building'); }
 function quizShow(sh) {
   toModel(sh.key === 'balcony' ? 'house' : null); stopFail();
@@ -753,7 +755,18 @@ const learn = new Learn($('#learn'), {
   onLab: () => { setMode('lab'); syncDock(); },
   onClose: () => syncDock(),
 });
-function openLearn(kind, topic) { closePop(); if (quiz.isOpen) quiz.close(); learn.open(kind, topic); syncDock(); }
+function openLearn(kind, topic) { closePop(); if (quiz.isOpen) quiz.close(); if (roofPanel.isOpen) roofPanel.close(); learn.open(kind, topic); syncDock(); }
+// ---------- slab systems and roof shapes ----------
+const roofPanel = new Roofs($('#roofs'), {
+  onShow: (mode, key) => {
+    toModel(mode); stopFail();
+    const best = findFirst([{ key }]);
+    if (best) { select(best); focusOn(S.sel.set); }
+    syncDock();
+  },
+  onClose: () => syncDock(),
+});
+function openRoofs(tab, id) { closePop(); stopGuide(); if (quiz.isOpen) quiz.close(); if (learn.isOpen) learn.close(); roofPanel.open(tab, id); syncDock(); }
 // a short safety reminder on each element card, linked to the full notes
 function safetyHTML(key) {
   const ids = SAFETY_FOR[key]; if (!ids) return '';
@@ -941,7 +954,7 @@ function applyLang() {
   for (const el of $$('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
   for (const el of $$('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
   renderInspector(); renderPop(); updateTimeline(); renderSelTag();
-  renderFailBar(); fsim?.refreshLabels(); renderGuideBar(); if (quiz.isOpen) quiz.render(); if (learn.isOpen) learn.render();
+  renderFailBar(); fsim?.refreshLabels(); renderGuideBar(); if (quiz.isOpen) quiz.render(); if (learn.isOpen) learn.render(); if (roofPanel.isOpen) roofPanel.render();
   detail.refreshLabels(); lab.refreshLabels();
   if (S.mode === 'lab') { renderLab(); renderLabSteps(); }
   updateCanvasLabel(); resize(); invalidate();

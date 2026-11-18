@@ -34,6 +34,9 @@ const P = {
   height: '<path d="M4 20V8h8"/><path d="M12 8V4h8"/><path d="M15 12v8M12 17l3 3 3-3"/>',
   crane: '<path d="M6 21V4h2v17"/><path d="M4 21h6"/><path d="M8 5h12M8 5l4 4"/><path d="M18 5v6"/><path d="M16 11h4v3h-4z"/>',
   bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6Z"/>',
+  roof: '<path d="M2 12 12 4l10 8"/><path d="M5 10v10h14V10"/><path d="M16 6.5V4h2.5v4.5"/><path d="M9 20v-6h6v6" opacity=".55"/>',
+  factory: '<path d="M3 20V10l5 3v-3l5 3v-3l5 3V4h3v16Z"/><path d="M7 17h2M12 17h2"/>',
+  dome: '<path d="M4 20h16"/><path d="M5 20v-6h14v6"/><path d="M6 14a6 6 0 0 1 12 0"/><path d="M12 8V4"/><path d="M9 20v-3h6v3" opacity=".55"/>',
   guide: '<path d="M5 4h9a5 5 0 0 1 5 5v11H10a5 5 0 0 1-5-5Z"/><path d="M9 9h6M9 13h4"/>',
 };
 

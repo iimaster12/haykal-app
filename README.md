@@ -73,6 +73,8 @@ Every column, beam, footing, brick wall, pipe and roof layer opens a card: what 
   </tr>
 </table>
 
+**Slabs and roofs.** One panel explains the slab systems that carry the loads (solid, flat, ribbed, waffle, hollow-core, composite); a second explains nine roof shapes (flat, gable, hip, shed, mansard, gambrel, butterfly, dome, pitched) with where rain runs, drainage and waterproofing. Each type shows its pros and cons and where and why it is preferred.
+
 Also in the toolbar: section cuts in plan or elevation, floors pulled apart, layer switches (soil, foundation, frame, walls, openings, services, roof), and a choice of isolated, strip, raft or pile foundations.
 
 ## Install it on any device
